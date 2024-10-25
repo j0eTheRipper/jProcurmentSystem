@@ -74,7 +74,7 @@ public class finHomePage extends javax.swing.JFrame {
 
     private void button2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_button2MouseClicked
         // TODO add your handling code here:
-        new finHomePage().setVisible(true);
+        new JDialog().add("ijsdiflo", this);
     }//GEN-LAST:event_button2MouseClicked
 
     /**
