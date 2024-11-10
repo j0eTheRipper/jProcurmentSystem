@@ -4,17 +4,12 @@
  */
 package procurmentsystem;
 
+import java.io.FileNotFoundException;
 /**
  *
  * @author j0eTh
  */
 public class ProcurmentSystem {
-
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String[] args) {
-        
     }
-    // hello niqqa
 }
