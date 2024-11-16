@@ -61,6 +61,17 @@ public class Table {
         }
     }
 
+    public List<String> getLastRow() throws FileNotFoundException {
+        String lastLine = "";
+        Scanner reader = new Scanner(file);
+
+        while (reader.hasNextLine()) {
+            lastLine = reader.nextLine();
+        }
+
+        return List.of(lastLine.split(","));
+    }
+
     public List<List<String>> getRows(String column, Function<String, Boolean> checkerFunction) {
         if (!columnNames.contains(column))
             return null;
@@ -82,6 +93,9 @@ public class Table {
     }
 
     public int getRowIndex(String lookUpColumn, Function<String, Boolean> checkerFunction) throws ValueNotFound {
+        if (!columnNames.contains(lookUpColumn))
+            return 0;
+
         List<String> ColumnValues = columns.get(lookUpColumn);
         for (int i = 0; i < ColumnValues.size(); i++) {
             String cell = ColumnValues.get(i);
@@ -92,6 +106,9 @@ public class Table {
     }
 
     public List<Integer> getRowIndexes(String lookUpColumn, Function<String, Boolean> checkerFunction) throws ValueNotFound {
+        if (!columnNames.contains(lookUpColumn))
+            return null;
+
         List<String> ColumnValues = columns.get(lookUpColumn);
         ArrayList<Integer> result = new ArrayList<>();
 
@@ -104,12 +121,18 @@ public class Table {
     }
 
     public void updateRow(int rowIndex, String columnToBeEdited, String newValue) {
+        if (!columnNames.contains(columnToBeEdited))
+            return;
+
         columns.get(columnToBeEdited).set(rowIndex, newValue);
 
         writeNewContentsTofile();
     }
 
     public void updateRows(List<Integer> rowIndexes, String columnToBeEdited, String newValue) {
+        if (!columnNames.contains(columnToBeEdited))
+            return;
+
         for (int rowIndex : rowIndexes) {
             columns.get(columnToBeEdited).set(rowIndex, newValue);
         }
