@@ -7,17 +7,12 @@ public class requisition {
     private String requisID; // Unique identifier for the requisition
     private List<Item> items; // List of items in the requisition
     private PurchaseOrder purchaseOrder; // Associated PurchaseOrder (if any)
-    private User requester; // User who created the requisition
-    private User approval;  // User who approves/rejects the requisition
-
     // Constructor
-    public requisition(string fileName, String requisID, List<Item> items, User requester) {
-        this.table = new Table(fileName);
+    public requisition(String requisID, List<Item> items) {
+        this.table = new Table("src/files/requisition.csv");
         this.requisID = requisID;
         this.items = items;
-        this.requester = requester;
         this.purchaseOrder = null; // No PO linked initially
-        this.approval = null;      // Approval pending initially
     }
 
     // Getters and Setters
@@ -45,34 +40,13 @@ public class requisition {
         this.purchaseOrder = purchaseOrder;
     }
 
-    public User getRequester() {
-        return requester;
-    }
-
-    public void setRequester(User requester) {
-        this.requester = requester;
-    }
-
-    public User getApproval() {
-        return approval;
-    }
-
-    public void setApproval(User approval) {
-        this.approval = approval;
-    }
 
     // Method to display requisition details
     public void displayRequisition() {
         System.out.println("Requisition ID: " + requisID);
-        System.out.println("Requester: " + requester.getUID() + ": " + requester.getFirstName());
         System.out.println("Items in Requisition:");
         for (Item item : items) {
             System.out.println("- " + item.getItemName() + " (Code: " + item.getItemCode() + ")");
-        }
-        if (approval != null) {
-            System.out.println("Approved By: " + approval.getName());
-        } else {
-            System.out.println("Approval Pending");
         }
 
         }
@@ -85,7 +59,7 @@ public class requisition {
         return table.getRow("requisID", id -> id.equals(requisID));
     }
 
-    // Read all requisitions with a filter (e.g., by requester or approval status)
+    // Read all requisitions with a filter (e.g., by id)
     public List<List<String>> readRequisitions(String column, Function<String, Boolean> filter) {
         return table.getRows(column, filter);
     }
