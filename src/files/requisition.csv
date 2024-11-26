@@ -1,1 +1,1 @@
-requisID, requester, purchaseOrderID, approvalStatus, dateCreated, itemID, qtyPerID
+requisID, requester, purchaseOrderID, approvalStatus, dateCreated, itemCode, qtyPerID
