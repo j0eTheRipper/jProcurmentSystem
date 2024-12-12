@@ -1,7 +1,7 @@
 package procurmentsystem.Orders;
 
 public enum Status {
-    APPROVED,
+    PAID,
     REJECTED,
     PENDING,
 }

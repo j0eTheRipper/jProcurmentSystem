@@ -1,4 +1,4 @@
-package procurmentsystem;
+package procurmentsystem.Table;
 
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -129,7 +129,7 @@ public class Table {
         writeNewContentsTofile();
     }
 
-    public void updateRows(List<Integer> rowIndexes, String columnToBeEdited, String newValue) {
+    public void updateRow(List<Integer> rowIndexes, String columnToBeEdited, String newValue) {
         if (!columnNames.contains(columnToBeEdited))
             return;
 
@@ -162,7 +162,7 @@ public class Table {
         writeNewContentsTofile();
     }
 
-    public void deleteRows(List<Integer> rowIndexes) {
+    public void deleteRow(List<Integer> rowIndexes) {
         for (int rowIndex : rowIndexes) {
             for (String colName : columnNames) {
                 columns.get(colName).remove(rowIndex);

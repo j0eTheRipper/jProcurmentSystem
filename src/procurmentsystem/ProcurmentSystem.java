@@ -4,6 +4,8 @@
  */
 package procurmentsystem;
 
+import procurmentsystem.Table.Table;
+
 import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Scanner;

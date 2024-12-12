@@ -8,6 +8,7 @@ public class PurchaseOrder {
     private String itemID;
     private int price;
     private boolean isApproved;
+    private UserManager ApprovedStaff;
 
     //constructor
     public PurchaseOrder(String orderID, String requisitionID, String itemID, int price){

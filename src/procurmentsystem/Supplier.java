@@ -1,12 +1,16 @@
 package procurmentsystem;
 
+import procurmentsystem.Table.IncorrectNumberOfValues;
+import procurmentsystem.Table.Table;
+import procurmentsystem.Table.ValueNotFound;
+
 import java.io.FileNotFoundException;
 
 public class Supplier {
     private String supplierID;
     private String supplierName;
     private String supplierContact;
-     Table table;
+    private Table table;
 
     public Supplier(){
         try {

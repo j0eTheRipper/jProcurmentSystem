@@ -1,4 +1,6 @@
 package procurmentsystem;
+import procurmentsystem.Table.Table;
+
 import java.util.List;
 import java.util.function.Function;
 
