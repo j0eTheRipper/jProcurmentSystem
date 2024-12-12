@@ -1,4 +1,4 @@
-package procurmentsystem.Orders;
+package procurmentsystem.Table;
 
 public enum Status {
     PAID,

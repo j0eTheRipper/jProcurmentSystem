@@ -45,20 +45,16 @@ public class Table {
         }
     }
 
-    public List<String> getRow(String column, Function<String, Boolean> checkerFunction) {
+    public List<String> getRow(String column, Function<String, Boolean> checkerFunction) throws ValueNotFound {
         if (!columnNames.contains(column))
             return null;
 
-        try {
-            int rowNumber = getRowIndex(column, checkerFunction);
-            ArrayList<String> result = new ArrayList<>();
-            for (String colName : columnNames) {
-                result.add(columns.get(colName).get(rowNumber));
-            }
-            return result;
-        } catch (ValueNotFound e) {
-            return null;
+        int rowNumber = getRowIndex(column, checkerFunction);
+        ArrayList<String> result = new ArrayList<>();
+        for (String colName : columnNames) {
+            result.add(columns.get(colName).get(rowNumber));
         }
+        return result;
     }
 
     public List<String> getLastRow() throws FileNotFoundException {
