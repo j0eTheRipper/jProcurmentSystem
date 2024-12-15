@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.function.Function;
-import java.util.regex.Pattern;
 
 public class Supplier extends InteractionsWithTable{
 
@@ -91,6 +90,20 @@ public class Supplier extends InteractionsWithTable{
 
     }
 
+    public String getsupplierID() {
+        try {
+            Table table = new Table("src/files/supplier.csv");
+            List<String> row = table.getRow("supplierName", name -> name.equals(this.supplierName));
+            if (row != null && !row.isEmpty()) {
+                return row.get(0);
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("Supplier file not found.");
+        } catch (ValueNotFound e) {
+            System.out.println("Supplier ID not found.");
+        }
+        return null;
+    }
 
     public String getSupplierName() {
         return supplierName;
@@ -159,19 +172,8 @@ public class Supplier extends InteractionsWithTable{
 
     @Override
     public String toString() {
-        int IDLen = ID.length();
-        int nameLen = supplierName.length();
-        int IDColLen = 11 - IDLen;
-        int NameCollen = 13 - nameLen;
-        String IDspaces = new String(new char[IDColLen / 2]).replace("\0", " ");
-        String Namespaces = new String(new char[NameCollen / 2]).replace("\0", " ");
-
-
-        return
-                IDspaces + ID + IDspaces +
-                "| "+ Namespaces + supplierName + Namespaces +
-                "|  " + supplierContact;
-
+        return String.format("%-5s | %-12s | %-15s",
+                ID, supplierName, supplierContact);
     }
 
 }
