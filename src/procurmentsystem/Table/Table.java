@@ -68,23 +68,21 @@ public class Table {
         return List.of(lastLine.split(","));
     }
 
-    public List<List<String>> getRows(String column, Function<String, Boolean> checkerFunction) {
+    public List<List<String>> getRows(String column, Function<String, Boolean> checkerFunction) throws ValueNotFound {
         if (!columnNames.contains(column))
             return null;
 
-        List<String> columnValues = columns.get(column);
+        List<Integer> matchingRowNumbers = getRowIndexes(column, checkerFunction);
         ArrayList<List<String>> allMatchingRows = new ArrayList<>();
 
-        for (int i = 0; i < columnValues.size(); i++) {
-            String cell = columnValues.get(i);
-            if (checkerFunction.apply(cell)) {
-                ArrayList<String> result = new ArrayList<>();
-                for(String columnName : columnNames) {
-                    result.add(columns.get(columnName).get(i));
-                }
-                allMatchingRows.add(result);
+        for (int i : matchingRowNumbers) {
+            ArrayList<String> result = new ArrayList<>();
+            for(String columnName : columnNames) {
+                result.add(columns.get(columnName).get(i));
             }
+            allMatchingRows.add(result);
         }
+
         return allMatchingRows;
     }
 

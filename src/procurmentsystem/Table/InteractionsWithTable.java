@@ -2,7 +2,6 @@ package procurmentsystem.Table;
 
 import java.io.FileNotFoundException;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public abstract class InteractionsWithTable {
     protected String ID;

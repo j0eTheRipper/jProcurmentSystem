@@ -1,6 +1,5 @@
 package procurmentsystem;
 import java.io.*;
-import java.util.*;
 
 public class PurchaseOrder {
     private String orderID;
@@ -8,7 +7,7 @@ public class PurchaseOrder {
     private String itemID;
     private int price;
     private boolean isApproved;
-    private UserManager ApprovedStaff;
+    private User ApprovedStaff;
 
     //constructor
     public PurchaseOrder(String orderID, String requisitionID, String itemID, int price){
