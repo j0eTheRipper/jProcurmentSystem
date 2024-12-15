@@ -15,9 +15,26 @@ public abstract class InteractionsWithTable {
 
     protected String generateID() throws FileNotFoundException {
         List<String> lastRow = table.getLastRow();
-        String id = lastRow.get(0);
-        int newID = Integer.parseInt(id) + 1;
+
+        int newID = 1;
+
+        if (lastRow != null && !lastRow.isEmpty()) {
+            try {
+                String id = lastRow.get(0);
+                if (id != null && !id.isEmpty()) {
+                    newID = Integer.parseInt(id) + 1;
+                } else {
+                    System.out.println("Warning: ID in last row is empty. Starting from 1.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Warning: Invalid ID format in last row. Starting from 1.");
+            }
+        } else {
+            System.out.println("No rows found in the table. Starting ID from 1.");
+        }
+
         return String.valueOf(newID);
     }
+
 
 }

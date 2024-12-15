@@ -1,1 +1,5 @@
-ItemCode,ItemName,ItemDesc,PricePerUnit,MOQ,Supplier,RecommendedSalesPrice
+ItemCode,ItemName,ItemDesc,ItemQuantity,PricePerUnit,MOQ,SupplierID,RecommendedSalesPrice
+1,TV,curved tv,70,300,20,5,500
+2,Laptop,gaming laptop,50,200,30,5,600
+3,AC,Air Conditioner,97,300.0,90,6,400.0
+4,Headset,Wireless headset,90,100.0,20,2,70.0
