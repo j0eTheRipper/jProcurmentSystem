@@ -71,7 +71,7 @@ public class Item extends InteractionsWithTable {
             }
 
             // Resolve supplierID and create a Supplier object
-            String supplierID = row.get(6); // SupplierID is in column 6
+            String supplierID = row.get(6);
             Supplier supplier = Supplier.get("supplierID", id -> id.equals(supplierID));
             if (supplier == null) {
                 System.out.println("Supplier not found for the given supplier ID.");
@@ -111,7 +111,7 @@ public class Item extends InteractionsWithTable {
                 }
 
                 // Resolve supplierID into Supplier object
-                String supplierID = row.get(6); // SupplierID is in column 6
+                String supplierID = row.get(6);
                 Supplier supplier = Supplier.get("supplierID", id -> id.equals(supplierID));
                 if (supplier == null) {
                     System.out.println("Skipping row: Supplier not found for ID: " + supplierID);
@@ -134,6 +134,8 @@ public class Item extends InteractionsWithTable {
         } catch (FileNotFoundException e) {
             System.out.println("File name is incorrect");
             return new ArrayList<>();
+        } catch (ValueNotFound e) {
+            throw new RuntimeException(e);
         }
     }
 

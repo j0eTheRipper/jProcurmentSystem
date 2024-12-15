@@ -52,6 +52,8 @@ public class Supplier extends InteractionsWithTable{
         } catch (FileNotFoundException e) {
             System.out.println("File name is incorrect");
             return null;
+        } catch (ValueNotFound e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -80,14 +82,15 @@ public class Supplier extends InteractionsWithTable{
     }
 
     static void displayAllSuppliers(Scanner scanner) {
-        System.out.println("==============Current Suppliers=============");
-        System.out.println("Supplier ID, Supplier Name, Supplier Contact");
-        List<Supplier> allSuppliers =  getMultiple("supplierID", (x) -> !x.isEmpty());
+        System.out.println("============== Current Suppliers =============");
+        System.out.printf("%-10s | %-12s | %-15s%n",
+                "ID", "Name", "Contact");
+        System.out.println("=".repeat(40));
+        List<Supplier> allSuppliers = getMultiple("supplierID", (x) -> !x.isEmpty());
         for (Supplier x : allSuppliers) {
             System.out.println(x);
         }
         System.out.println("============================================");
-
     }
 
     public String getsupplierID() {
@@ -172,7 +175,7 @@ public class Supplier extends InteractionsWithTable{
 
     @Override
     public String toString() {
-        return String.format("%-5s | %-12s | %-15s",
+        return String.format("%-10s | %-12s | %-15s",
                 ID, supplierName, supplierContact);
     }
 
