@@ -1,62 +1,49 @@
 package procurmentsystem;
-import java.io.*;
-import java.util.*;
 
-public class PurchaseOrder {
-    private String orderID;
-    private String requisitionID;
-    private String itemID;
-    private int price;
-    private boolean isApproved;
-    private UserManager ApprovedStaff;
+public class PurchaseOrder{
+    //attribute
+    private requisition requisition;
+    private Item item;
+    private String POID;
+    private String status;
+    private double price;
 
     //constructor
-    public PurchaseOrder(String orderID, String requisitionID, String itemID, int price){
-        this.orderID = orderID;
-        this.requisitionID = requisitionID;
-        this.itemID = itemID;
+    public PurchaseOrder(String POID, requisition requisition, Item item, String status, double price){
+        this.POID = POID;
+        this.requisition = requisition;
+        this.item = item;
+        this.status = "Pending";//defaulted to pending, waiting approve/reject
         this.price = price;
-        this.isApproved = false; //by default is false to avoid auto approval.
-    }
-
-    //methods
-    //approve or reject PO
-    public void approvePO(){
-        this.isApproved = true;
-    }
-
-    public void rejectPO(){
-        this.isApproved = false;
-    }
-    //add items to purchase order list
-    public void additemsPO(String requisitionID, String itemID, int price){
 
     }
-    //save generate PO 
-    public void savePOform()  throws IOException{
-        //save file things, write
+
+    public PurchaseOrder(requisition requisition){
+        this.requisition = requisition;
     }
 
-
-
-    //getters
-    public String getOrderID() {
-        return orderID;
+    //approve or reject status
+    public void statusApprove(){
+        this.status = "Approved";
+    }
+    public void statusReject(){
+        this.status = "Rejected";
     }
 
-    public String getRequisitionID() {
-        return requisitionID;
+    //getter and setter
+    public String getPOID(){
+        return POID;
     }
-
-    public String getItemID() {
-        return itemID;
+    public String getStatus(){
+        return status;
     }
-
-    public int getPrice() {
+    public double getPrice(){
         return price;
     }
-
-    public boolean isApproved() {
-        return isApproved;
+    public void setPOID(String POID){
+        this.POID = POID;
+    }
+    public void setPrice(double price){
+        this.price = price;
     }
 }

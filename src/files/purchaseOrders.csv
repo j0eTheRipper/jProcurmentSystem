@@ -1,1 +1,1 @@
-POID	Status	ApprovedBy	ReqID	Price
+POID,ReqID,ItemID,Price,Status,ApprovedBy
