@@ -1,61 +1,111 @@
 package procurmentsystem;
-import java.io.*;
 
-public class PurchaseOrder {
-    private String orderID;
-    private String requisitionID;
+import java.io.IOException;
+import java.util.List;
+import procurmentsystem.Table.IncorrectNumberOfValues;
+import procurmentsystem.Table.Table;
+
+public class PurchaseOrder{
+    //attribute
+    private Table table;
+    private String requisID;
     private String itemID;
-    private int price;
-    private boolean isApproved;
-    private User ApprovedStaff;
+    private List<Item> items;
+    private String POID;
+    private String status;
+    private boolean statusApproval;
+    private double price;
 
     //constructor
-    public PurchaseOrder(String orderID, String requisitionID, String itemID, int price){
-        this.orderID = orderID;
-        this.requisitionID = requisitionID;
+    public PurchaseOrder(String POID,String status,String requisID, String itemID,double price, boolean statusApproval){
+        this.POID = POID; //Purchase order ID
+        this.status = "Pending";//defaulted to pending, waiting approve/reject
+        this.requisID = requisID;
         this.itemID = itemID;
-        this.price = price;
-        this.isApproved = false; //by default is false to avoid auto approval.
-    }
-
-    //methods
-    //approve or reject PO
-    public void approvePO(){
-        this.isApproved = true;
-    }
-
-    public void rejectPO(){
-        this.isApproved = false;
-    }
-    //add items to purchase order list
-    public void additemsPO(String requisitionID, String itemID, int price){
+        this.price = price;//total price
+        this.statusApproval = false; //default for approval
 
     }
-    //save generate PO 
-    public void savePOform()  throws IOException{
-        //save file things, write
+
+    public PurchaseOrder() throws IOException{
+        this.table = new Table("src/files/purchaseOrders.csv");
     }
 
 
+    //
+    public void readPOFile(){
 
-    //getters
-    public String getOrderID() {
-        return orderID;
     }
 
-    public String getRequisitionID() {
-        return requisitionID;
+    //approve, reject, paid status
+    public String statusApprove(){
+        return this.status = "Approved";
+    }
+    public String statusReject(){
+        return this.status = "Rejected";
     }
 
-    public String getItemID() {
-        return itemID;
+    //getter
+    public String getPOID(){
+        return POID;
     }
-
-    public int getPrice() {
+    public String getStatus(){
+        return status;
+    }
+    public double getPrice(){
         return price;
     }
 
-    public boolean isApproved() {
-        return isApproved;
+    //setter
+    public void setPOID(String POID) throws IncorrectNumberOfValues{
+        if (POID == null || POID.isBlank()){
+            System.out.println("Please set a purchase order ID.");
+        }
+        else{
+            String[] newPOID = {POID};
+            table.addRow(newPOID);
+        }
     }
+
+    public void setPrice(double price) throws IncorrectNumberOfValues{
+        if (price <= 0.0){
+            System.out.println("Please set a price for more than a 0.0");
+        }
+        else{
+
+        }
+    }
+
+    public String setStatus(boolean statusApproval){
+        if (statusApproval = true){
+            return statusApprove();
+        }
+        else{
+            return  statusReject();
+        }
+    }
+
+
+    //methods
+    //generate purchase order with status pending as default
+    public void generatePurchaseOrder(String POID, String requisID, String itemID, double price, String status){
+
+    }
+
+    //change status of the purchase order
+    public void updatePOStatus(String POID, String status){
+
+    }
+
+    //view one purchase order
+    public void viewPurchaseOrder(){
+        System.out.println("Purchase Order ID : "+ POID);
+        System.out.println("Requisition ID : "+ requisID);
+        System.out.println("Item ID : "+ itemID);
+        System.out.println("Price : "+ price);
+        System.out.println("Status of approval : "+ status);
+    }
+
+    //view list of purchase orders by ID
+    
 }
