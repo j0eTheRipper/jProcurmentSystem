@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import procurmentsystem.Table.*;
+import procurmentsystem.Table.IncorrectNumberOfValues;
+import procurmentsystem.Table.Status;
+import procurmentsystem.Table.Table;
+import procurmentsystem.Table.ValueNotFound;
 
 public class PurchaseOrder extends Order {
     private Requisition requisition;
@@ -80,12 +83,12 @@ public class PurchaseOrder extends Order {
             for (List<String> po : purchaseOrders) {
                 POData data = getPoData(po);
                 result.add( new PurchaseOrder(
-                    po.get(0),
-                    Requisition.get("requisID", (x) -> x.equals(po.get(1))),
-                    data.purchaseManager(),
-                    data.financialManager(),
-                    data.status(),
-                    Integer.parseInt(po.get(2))
+                        po.get(0),
+                        Requisition.get("requisID", (x) -> x.equals(po.get(1))),
+                        data.purchaseManager(),
+                        data.financialManager(),
+                        data.status(),
+                        Integer.parseInt(po.get(2))
                 ));
             }
             return result;
@@ -97,6 +100,54 @@ public class PurchaseOrder extends Order {
         }
     }
 
+    public PurchaseOrder() throws IOException{
+        this.table = new Table("src/files/purchaseOrders.csv");
+    }
+
+
+    //
+    public void readPOFile(){
+
+    }
+
+    //approve, reject, paid status
+    public String statusApprove(){
+        return this.status = "Approved";
+    }
+    public String statusReject(){
+        return this.status = "Rejected";
+    }
+
+    //getter
+    public String getPOID(){
+        return POID;
+    }
+    public String getStatus(){
+        return status;
+    }
+    public double getPrice(){
+        return price;
+    }
+
+    //setter
+    public void setPOID(String POID) throws IncorrectNumberOfValues{
+        if (POID == null || POID.isBlank()){
+            System.out.println("Please set a purchase order ID.");
+        }
+        else{
+            String[] newPOID = {POID};
+            table.addRow(newPOID);
+        }
+    }
+
+    public void setPrice(double price) throws IncorrectNumberOfValues{
+        if (price <= 0.0){
+            System.out.println("Please set a price for more than a 0.0");
+        }
+        else{
+
+        }
+    }
     private static POData getPoData(List<String> PurchaseOrderData) {
         PurchaseManager purchaseManager = (PurchaseManager) User.get("id", (x) -> x.equals(PurchaseOrderData.get(4)));
         FinancialManager financialManager = (FinancialManager) User.get("id", (x) -> x.equals(PurchaseOrderData.get(5)));
@@ -113,20 +164,40 @@ public class PurchaseOrder extends Order {
     private record POData(PurchaseManager purchaseManager, FinancialManager financialManager, Status status) {
     }
 
-
-
-    @Override
-    public String toString() {
-        return "";
+    public void setItemID(String itemID){
+        if (Item.itemCode != null){
+            String[] newItemCode = {itemID};
+            table.updateRow(rowIndex, "ItemID", newItemCode);
+        }
+        else{
+            System.out.println("Item does not exist.");
+        }
     }
 
-    @Override
-    protected boolean add() {
-        return false;
+
+    //methods
+    //generate purchase order with status pending as default
+    public void generatePurchaseOrder(String POID, String requisID, String itemID, double price, String status){
+
     }
 
-    @Override
-    protected boolean delete() {
-        return false;
+    //change status of the purchase order
+    public void updatePOStatus(Scanner sc, String POID, String status){
+
+    }
+
+    //view one purchase order
+    public void viewPurchaseOrder(){
+        System.out.println("Purchase Order ID : "+ POID);
+        System.out.println("Requisition ID : "+ requisID);
+        System.out.println("Item ID : "+ itemID);
+        System.out.println("Price : "+ price);
+        System.out.println("Status of approval : "+ status);
+    }
+
+    //view list of purchase orders by ID
+    public void viewAllPO(){
+        System.out.println("----------Purchase Orders by ID----------");
+
     }
 }
