@@ -17,7 +17,14 @@ public class ProcurmentSystem {
         boolean exit = false;
 
         while (!exit) {
-            System.out.println("\n==== Inventory Manager Menu ====");
+            
+        }
+        scanner.close();
+    }
+    
+    private static void supplyManager() {
+
+        System.out.println("\n==== Inventory Manager Menu ====");
             System.out.println("1. Supplier Management");
             System.out.println("2. Item Management");
             System.out.println("3. Exit");
@@ -42,10 +49,8 @@ public class ProcurmentSystem {
                 default:
                     System.out.println("Invalid option. Please try again.");
             }
-        }
-        scanner.close();
     }
-
+    
     private static void supplierMenu(Scanner scanner) throws IOException {
         boolean backToMain = false;
 

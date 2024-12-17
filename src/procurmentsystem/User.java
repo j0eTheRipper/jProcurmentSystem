@@ -1,13 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
+
 package procurmentsystem;
 
-/**
- *
- * @author elect
- */
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -17,8 +11,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import procurmentsystem.Table.InteractionsWithTable;
+import procurmentsystem.Table.Table;
+import procurmentsystem.Table.ValueNotFound;
 
-public abstract class User {
+public abstract class User extends InteractionsWithTable {
     // Define the path to the CSV file
     private static final String FILE_PATH = "C:\\Users\\elect\\OneDrive\\Documents\\NetBeansProjects\\AdminMY\\src\\adminmy\\users.csv";  // Adjust path if needed
     protected String username;
@@ -29,8 +28,36 @@ public abstract class User {
 
     
     // Login method to validate username and password
-    public static User login(String username, String password) throws FileNotFoundException {
+    public static User login(String email, String password) throws FileNotFoundException {
         Table table = new Table(FILE_PATH);
+
+        try {
+            List<String> row = table.getRow("email", (x) -> x.equals(email));
+            switch (row.get(4)) {
+                case "Financial Manager":
+                    return new FinancialManager(row.get(0), row.get(1), row.get(2), row.get(3), row.get(5));
+
+                case "Sales Manager ":
+                    return new SalesManager(row.get(0), row.get(1), row.get(2), row.get(3), row.get(5));
+
+                case "Purchase Manager":
+                    return new PurchaseManager(row.get(0), row.get(1), row.get(2), row.get(3), row.get(5));
+
+                case "Inventory Manager":
+                    return new InventoryManager(row.get(0), row.get(1), row.get(2), row.get(3), row.get(5));
+
+                case "Admin":
+                    return new Admin(row.get(0), row.get(1), row.get(2), row.get(3), row.get(5));
+            }
+        } catch (ValueNotFound ex) {
+            return null;
+        }
+
+
+
+
+        return null;
+    }
         
 //        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
 //            String line;
@@ -50,7 +77,7 @@ public abstract class User {
 //        }
 //        
 //        return false;
-    }
+//  }
     
     // Method to update the password
     public boolean updatePassword(String username, String oldPassword, String newPassword) {
@@ -196,5 +223,4 @@ public boolean createUser(String username, String password, String firstName, St
 
 
 
-}
 }

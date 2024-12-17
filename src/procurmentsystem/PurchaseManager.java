@@ -1,15 +1,28 @@
 package procurmentsystem;
-import java.util.*;
-import java.io.*;
 
-public class PurchaseManager {
-    private List<PurchaseOrder> purchaseOrders = new ArrayList<>(); //List the purchase orders?? have to add viewing.
+public class PurchaseManager extends User {
 
-    //show user purchase manager, name and uuid
-    //view the purchase order list
-    //create a purchase order
-    public void generatePurchaseOrder(String orderID, String requisitionID, String itemID, int price){
-        PurchaseOrder po = new PurchaseOrder(orderID, requisitionID, itemID, price);
-        purchaseOrders.add(po); //TBA
+    public PurchaseManager(String ID, String firstName, String lastName, String password, String email) {
+
+    }
+
+    @Override
+    public String toString() {
+        return "";
+    }
+
+    @Override
+    protected boolean add() {
+        return false;
+    }
+
+    @Override
+    protected boolean delete() {
+        return false;
+    }
+
+    @Override
+    protected boolean update(String columnName, String oldValue, String newValue) {
+        return false;
     }
 }

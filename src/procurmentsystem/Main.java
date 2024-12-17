@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
- */
+
 package procurmentsystem;
 
 import java.io.FileNotFoundException;
@@ -11,7 +8,6 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) throws FileNotFoundException {
         Scanner scanner = new Scanner(System.in);
-        UserManager userManager = new UserManager();
         boolean isLoggedIn = false;  // Flag to track login status
         
         while (!isLoggedIn) {  // Keep looping until the user logs in
@@ -33,8 +29,8 @@ public class Main {
                     
                     System.out.print("Enter password: ");
                     String password = scanner.nextLine();
-                    
-                    if (userManager.login(username, password)) {
+                    User user = User.login(username, password);
+                    if (user != null) {
                         System.out.println("Login successful!");
                         isLoggedIn = true;  // Set flag to true to exit loop
                     } else {
@@ -53,7 +49,7 @@ public class Main {
                     System.out.print("Enter new password: ");
                     String newPassword = scanner.nextLine();
                     
-                    if (userManager.updatePassword(username, oldPassword, newPassword)) {
+                    if (User.updatePassword(username, oldPassword, newPassword)) {
                         break;
                     } else {
                         System.out.println("Password change failed. Please check your credentials.");
