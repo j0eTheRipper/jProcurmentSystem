@@ -95,8 +95,7 @@ public abstract class User {
         }
 
         return passwordUpdated;
-    }
-    
+    }    
     // Method to delete an account
 public boolean deleteAccount(String username, String password) {
     List<String> fileContent = new ArrayList<>();
@@ -198,4 +197,4 @@ public boolean createUser(String username, String password, String firstName, St
 
 
 }
-
+}

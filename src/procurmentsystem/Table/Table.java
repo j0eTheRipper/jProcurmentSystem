@@ -1,4 +1,4 @@
-package procurmentsystem;
+package procurmentsystem.Table;
 
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -45,43 +45,51 @@ public class Table {
         }
     }
 
-    public List<String> getRow(String column, Function<String, Boolean> checkerFunction) {
+    public List<String> getRow(String column, Function<String, Boolean> checkerFunction) throws ValueNotFound {
         if (!columnNames.contains(column))
             return null;
 
-        try {
-            int rowNumber = getRowIndex(column, checkerFunction);
-            ArrayList<String> result = new ArrayList<>();
-            for (String colName : columnNames) {
-                result.add(columns.get(colName).get(rowNumber));
-            }
-            return result;
-        } catch (ValueNotFound e) {
-            return null;
+        int rowNumber = getRowIndex(column, checkerFunction);
+        ArrayList<String> result = new ArrayList<>();
+        for (String colName : columnNames) {
+            result.add(columns.get(colName).get(rowNumber));
         }
+        return result;
     }
 
-    public List<List<String>> getRows(String column, Function<String, Boolean> checkerFunction) {
+    public List<String> getLastRow() throws FileNotFoundException {
+        String lastLine = "";
+        Scanner reader = new Scanner(file);
+
+        while (reader.hasNextLine()) {
+            lastLine = reader.nextLine();
+        }
+
+        return List.of(lastLine.split(","));
+    }
+
+    public List<List<String>> getRows(String column, Function<String, Boolean> checkerFunction) throws ValueNotFound {
         if (!columnNames.contains(column))
             return null;
 
-        List<String> columnValues = columns.get(column);
+        List<Integer> matchingRowNumbers = getRowIndexes(column, checkerFunction);
         ArrayList<List<String>> allMatchingRows = new ArrayList<>();
 
-        for (int i = 0; i < columnValues.size(); i++) {
-            String cell = columnValues.get(i);
-            if (checkerFunction.apply(cell)) {
-                ArrayList<String> result = new ArrayList<>();
-                for(String columnName : columnNames) {
-                    result.add(columns.get(columnName).get(i));
-                }
-                allMatchingRows.add(result);
+        for (int i : matchingRowNumbers) {
+            ArrayList<String> result = new ArrayList<>();
+            for(String columnName : columnNames) {
+                result.add(columns.get(columnName).get(i));
             }
+            allMatchingRows.add(result);
         }
+
         return allMatchingRows;
     }
 
     public int getRowIndex(String lookUpColumn, Function<String, Boolean> checkerFunction) throws ValueNotFound {
+        if (!columnNames.contains(lookUpColumn))
+            return 0;
+
         List<String> ColumnValues = columns.get(lookUpColumn);
         for (int i = 0; i < ColumnValues.size(); i++) {
             String cell = ColumnValues.get(i);
@@ -92,6 +100,9 @@ public class Table {
     }
 
     public List<Integer> getRowIndexes(String lookUpColumn, Function<String, Boolean> checkerFunction) throws ValueNotFound {
+        if (!columnNames.contains(lookUpColumn))
+            return null;
+
         List<String> ColumnValues = columns.get(lookUpColumn);
         ArrayList<Integer> result = new ArrayList<>();
 
@@ -104,12 +115,18 @@ public class Table {
     }
 
     public void updateRow(int rowIndex, String columnToBeEdited, String newValue) {
+        if (!columnNames.contains(columnToBeEdited))
+            return;
+
         columns.get(columnToBeEdited).set(rowIndex, newValue);
 
         writeNewContentsTofile();
     }
 
-    public void updateRows(List<Integer> rowIndexes, String columnToBeEdited, String newValue) {
+    public void updateRow(List<Integer> rowIndexes, String columnToBeEdited, String newValue) {
+        if (!columnNames.contains(columnToBeEdited))
+            return;
+
         for (int rowIndex : rowIndexes) {
             columns.get(columnToBeEdited).set(rowIndex, newValue);
         }
@@ -139,7 +156,7 @@ public class Table {
         writeNewContentsTofile();
     }
 
-    public void deleteRows(List<Integer> rowIndexes) {
+    public void deleteRow(List<Integer> rowIndexes) {
         for (int rowIndex : rowIndexes) {
             for (String colName : columnNames) {
                 columns.get(colName).remove(rowIndex);
