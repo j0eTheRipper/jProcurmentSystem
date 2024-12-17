@@ -22,28 +22,39 @@ public class UserManager {
     // Define the path to the CSV file
     private static final String FILE_PATH = "C:\\Users\\elect\\OneDrive\\Documents\\NetBeansProjects\\AdminMY\\src\\adminmy\\users.csv";  // Adjust path if needed
 
+    
     // Login method to validate username and password
-    public boolean login(String username, String password) {
+    public boolean login(String username, String password) throws FileNotFoundException {
         File file = new File(FILE_PATH);
+          
+        Table x = new Table(FILE_PATH);
+        List<String> userDetails = x.getRow("username", (user) -> user.equals(username));
+        if (userDetails == null)
+            return false;
         
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] userDetails = line.split(",");
-                // Assuming CSV format: username,password,role,firstName,lastName
-                if (userDetails[0].equals(username) && userDetails[1].equals(password)) {
-                    return true;
-                }
-            }
-            // If no matching credentials are found
-            System.out.println("Invalid credentials, please try again.");
-        } catch (FileNotFoundException e) {
-            System.out.println("Error: File not found.");
-        } catch (IOException e) {
-            System.out.println("An error occurred while reading the user database.");
+        if (userDetails.get(0).equals(username) && userDetails.get(1).equals(password)) {
+            return true;
+        } else {
+            return false;
         }
-        
-        return false;
+//        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+//            String line;
+//            while ((line = reader.readLine()) != null) {
+//                String[] userDetails = line.split(",");
+//                // Assuming CSV format: username,password,role,firstName,lastName
+//                if (userDetails[0].equals(username) && userDetails[1].equals(password)) {
+//                    return true;
+//                }
+//            }
+//            // If no matching credentials are found
+//            System.out.println("Invalid credentials, please try again.");
+//        } catch (FileNotFoundException e) {
+//            System.out.println("Error: File not found.");
+//        } catch (IOException e) {
+//            System.out.println("An error occurred while reading the user database.");
+//        }
+//        
+//        return false;
     }
     
     // Method to update the password
