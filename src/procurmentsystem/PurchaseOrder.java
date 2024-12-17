@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import procurmentsystem.Table.IncorrectNumberOfValues;
 import procurmentsystem.Table.Table;
+import java.util.Scanner;
 
 public class PurchaseOrder{
     //attribute
@@ -72,7 +73,7 @@ public class PurchaseOrder{
             System.out.println("Please set a price for more than a 0.0");
         }
         else{
-
+            
         }
     }
 
@@ -85,6 +86,16 @@ public class PurchaseOrder{
         }
     }
 
+    public void setItemID(String itemID){
+        if (Item.itemCode != null){
+            String[] newItemCode = {itemID};
+            table.updateRow(rowIndex, "ItemID", newItemCode);
+        }
+        else{
+            System.out.println("Item does not exist.");
+        }
+    }
+
 
     //methods
     //generate purchase order with status pending as default
@@ -93,7 +104,7 @@ public class PurchaseOrder{
     }
 
     //change status of the purchase order
-    public void updatePOStatus(String POID, String status){
+    public void updatePOStatus(Scanner sc, String POID, String status){
 
     }
 
@@ -107,5 +118,8 @@ public class PurchaseOrder{
     }
 
     //view list of purchase orders by ID
-    
+    public void viewAllPO(){
+        System.out.println("----------Purchase Orders by ID----------");
+        
+    }
 }
