@@ -4,4 +4,5 @@ public enum Status {
     PAID,
     REJECTED,
     PENDING,
+    APPROVED,
 }
