@@ -1,78 +1,210 @@
 package procurmentsystem;
+
+import procurmentsystem.Table.*;
+
+import java.io.FileNotFoundException;
+import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
 
-public class requisition {
-    private final Table table;
-    private String requisID; // Unique identifier for the requisition
-    private List<Item> items; // List of items in the requisition
-    private PurchaseOrder purchaseOrder; // Associated PurchaseOrder (if any)
+public class requisition extends Order {
+    private String requisID;
+    private String requesterName;
+    private String PurchaseOrder;
+    private String status;
+    private String itemCode;
+    private Integer qtyPerID;
+    public requisition(){
+        try {
+            this.table = new Table("src/files/requisition.csv");
+        }
+        catch (FileNotFoundException e){
+            System.out.println("File not found");
+        }
+    }
     // Constructor
-    public requisition(String requisID, List<Item> items) {
-        this.table = new Table("src/files/requisition.csv");
-        this.requisID = requisID;
-        this.items = items;
-        this.purchaseOrder = null; // No PO linked initially
+    public requisition(String requisID, String requesterName, String PurchaseOrder, String status, Date dateCreated, String itemCode, Integer qtyPerID) {
+        this.requisID= requisID;
+        this.requesterName= requesterName;
+        this.PurchaseOrder= PurchaseOrder;
+        this.status= status;
+        this.itemCode= itemCode;
+        this.qtyPerID=qtyPerID;
+        try {
+            table = new Table("src/files/requisition.csv");
+            ID = generateID();
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found");
+        }
+    }
+
+    public requisition(String requisID, String requesterName, String PurchaseOrder, String status, String itemCode, String qtyPerID) {
+        this.requisID= requisID;
+        this.requesterName= requesterName;
+        this.PurchaseOrder= PurchaseOrder;
+        this.status= status;
+        this.itemCode= itemCode;
+        this.qtyPerID= Integer.parseInt(qtyPerID);
+        try {
+            table = new Table("src/files/requisition.csv");
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found");
+        }
     }
 
     // Getters and Setters
+    public static requisition get(String value, Function<String, Boolean> filter) {
+        try {
+            Table table = new Table("src/files/requisition.csv");
+            List<String> row = table.getRow(value, filter);
+
+            if (row == null || row.size() < 8) {
+                System.out.println("No requisition found matching the criteria.");
+                return null;
+            }
+
+            String requisID = row.get(6);
+            requisition result = requisition.get("requisID", id -> id.equals(requisID));
+
+            if (result == null) {
+                System.out.println("Requisition not found for given Requisition ID.");
+                return null;
+            }
+
+            return new requisition(
+                    row.get(0),  // requisID
+                    row.get(1),  // requesterName
+                    row.get(2),  // purchaseOrderID
+                    row.get(3),  // approvalStatus
+                    row.get(4),  // itemCode
+                    row.get(5)   // qtyPerId
+            );
+        } catch (FileNotFoundException e) {
+            System.out.println("File name is incorrect");
+            return null;
+        } catch (ValueNotFound e) {
+            System.out.println("Value not found!");
+            return null;
+        }
+    }
+
     public String getRequisID() {
         return requisID;
     }
-
-    public void setRequisID(String requisID) {
+    public String getRequesterName() {
+        return requesterName;
+    }
+    public String getPurchaseOrder() {
+        return PurchaseOrder;
+    }
+    public String getStatus() {
+        return status;
+    }
+    public String getItemCode() {
+        return itemCode;
+    }
+    public Integer getQtyPerID() {
+        return qtyPerID;
+    }
+    // Setters with validation
+    public boolean setRequisID(String requisID) {
+        if (requisID == null || !requisID.matches("[0-9]+"))
+            return false;
+        this.update("requisID", this.requisID, requisID);
         this.requisID = requisID;
+        return true;
     }
 
-    public List<Item> getItems() {
-        return items;
+    public boolean setRequesterName(String requesterName) {
+        if (requesterName == null || !requesterName.matches("[A-Za-z ]+"))
+            return false;
+        this.update("requesterName", this.requesterName, requesterName);
+        this.requesterName = requesterName;
+        return true;
     }
 
-    public void setItems(List<Item> items) {
-        this.items = items;
+    public boolean setPurchaseOrder(String purchaseOrder) {
+        if (purchaseOrder == null || purchaseOrder.isEmpty())
+            return false;
+        this.update("PurchaseOrder", this.PurchaseOrder, purchaseOrder);
+        this.PurchaseOrder = purchaseOrder;
+        return true;
     }
 
-    public PurchaseOrder getPurchaseOrder() {
-        return purchaseOrder;
+    public boolean setStatus(String status) {
+        if (status == null || !(status.equals("Pending") || status.equals("Approved") || status.equals("Rejected")))
+            return false;
+        this.update("status", this.status, status);
+        this.status = status;
+        return true;
     }
 
-    public void setPurchaseOrder(PurchaseOrder purchaseOrder) {
-        this.purchaseOrder = purchaseOrder;
+    public boolean setItemCode(String itemCode) {
+        if (itemCode == null || !itemCode.matches("ITEM[0-9]+"))
+            return false;
+        this.update("itemCode", this.itemCode, itemCode);
+        this.itemCode = itemCode;
+        return true;
+    }
+
+    public boolean setQtyPerID(Integer qtyPerID) {
+        if (qtyPerID == null || qtyPerID <= 0)
+            return false;
+        this.update("qtyPerID", String.valueOf(this.qtyPerID), String.valueOf(qtyPerID));
+        this.qtyPerID = qtyPerID;
+        return true;
     }
 
 
-    // Method to display requisition details
-    public void displayRequisition() {
-        System.out.println("Requisition ID: " + requisID);
-        System.out.println("Items in Requisition:");
-        for (Item item : items) {
-            System.out.println("- " + item.getItemName() + " (Code: " + item.getItemCode() + ")");
+
+    public boolean add() {
+        try {
+            String[] values = {
+                    requisID,             // RequisID
+                    requesterName,        // RequesterName
+                    PurchaseOrder,        // PurchaseOrder
+                    status,               // Status
+                    itemCode,             // ItemCode
+                    String.valueOf(qtyPerID)  // QtyPerID
+            };
+
+            table.addRow(values);
+            return true;
+        } catch (IncorrectNumberOfValues e) {
+            System.out.println("Incorrect Input: " + e.getMessage());
+            return false;
         }
+    }
 
+
+    public boolean delete() {
+        try {
+            int rowIndex = table.getRowIndex("requisID", id -> id.equals(requisID));
+            table.deleteRow(rowIndex);
+            System.out.println("Requisition with ID " + requisID + " has been deleted.");
+            return true;
+        } catch (ValueNotFound e) {
+            System.out.println("Requisition with ID " + requisID + " was not found in the file.");
+            return false;
         }
-    public void createRequisition(String requisID, String requester, String purchaseOrderID, String approvalStatus, String dateCreated, String itemID, String qtyPerID) throws Table.IncorrectNumberOfValues {
-        String[] newRequisition = {requisID, requester, purchaseOrderID, approvalStatus, dateCreated, itemID, qtyPerID};
-        table.addRow(newRequisition);
-    }
-    // Read a single requisition by ID
-    public List<String> readRequisition(String requisID) {
-        return table.getRow("requisID", id -> id.equals(requisID));
     }
 
-    // Read all requisitions with a filter (e.g., by id)
-    public List<List<String>> readRequisitions(String column, Function<String, Boolean> filter) {
-        return table.getRows(column, filter);
+
+    @Override
+    protected boolean update(String columnName, String oldValue, String newValue) {
+        try {
+            table.updateRow(table.getRowIndex(columnName, (x) -> x.equals(oldValue)), columnName, newValue);
+            return true;
+        } catch (ValueNotFound e) {
+            System.out.println("Requisition ID not found.");
+            return false;
+        }
     }
 
-    // Update an existing requisition by ID
-    public void updateRequisition(String requisID, String columnToEdit, String newValue) throws Table.ValueNotFound {
-        int rowIndex = table.getRowIndex("requisID", id -> id.equals(requisID));
-        table.updateRow(rowIndex, columnToEdit, newValue);
-    }
-
-    // Delete a requisition by ID
-    public void deleteRequisition(String requisID) throws Table.ValueNotFound {
-        int rowIndex = table.getRowIndex("requisID", id -> id.equals(requisID));
-        table.deleteRow(rowIndex);
+    // Override toString method to display requisition details
+    @Override
+    public String toString() {
+        return String.format("%-10s | %-15s | %-12s | %-15s | %-9s | %-5s",
+                requisID, requesterName, PurchaseOrder, status, itemCode, qtyPerID);
     }
 }
