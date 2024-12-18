@@ -1,9 +1,11 @@
+
 package procurmentsystem;
 
-public class PurchaseManager extends User {
 
-    public PurchaseManager(String ID, String firstName, String lastName, String password, String email) {
-
+public class FinancialManager extends User {
+  
+    public FinancialManager(String ID, String firstName, String lastName, String password, String email) {
+        
     }
 
     @Override
