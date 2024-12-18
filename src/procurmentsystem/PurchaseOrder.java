@@ -1,31 +1,24 @@
 package procurmentsystem;
 
 import java.io.IOException;
-import java.util.List;
-import procurmentsystem.Table.IncorrectNumberOfValues;
-import procurmentsystem.Table.Table;
-import java.util.Scanner;
+import procurmentsystem.Table.*;
 
-public class PurchaseOrder{
+public class PurchaseOrder extends requisition{
     //attribute
     private Table table;
+    private String POID;
     private String requisID;
     private String itemID;
-    private List<Item> items;
-    private String POID;
     private String status;
-    private boolean statusApproval;
     private double price;
 
     //constructor
-    public PurchaseOrder(String POID,String status,String requisID, String itemID,double price, boolean statusApproval){
-        this.POID = POID; //Purchase order ID
-        this.status = "Pending";//defaulted to pending, waiting approve/reject
-        this.requisID = requisID;
-        this.itemID = itemID;
-        this.price = price;//total price
-        this.statusApproval = false; //default for approval
-
+    public PurchaseOrder(String POID, String requisID, String itemID, double price){
+        this.POID = POID;           //purchase order id
+        this.requisID = requisID;   //requisition id
+        this.itemID = itemID;       //item id
+        this.price = price;         //price for purchase order
+        this.status = "Pending";    //default the status to pending
     }
 
     public PurchaseOrder() throws IOException{
@@ -33,12 +26,7 @@ public class PurchaseOrder{
     }
 
 
-    //
-    public void readPOFile(){
-
-    }
-
-    //approve, reject, paid status
+    //approve, reject status
     public String statusApprove(){
         return this.status = "Approved";
     }
@@ -46,70 +34,59 @@ public class PurchaseOrder{
         return this.status = "Rejected";
     }
 
-    //getter
-    public String getPOID(){
+    //Getter 
+    public String POID(){
         return POID;
     }
-    public String getStatus(){
-        return status;
+    public String requisID(){
+        return requisID;
     }
-    public double getPrice(){
+    public String itemID(){
+        return itemID;
+    }
+    public double price(){
         return price;
     }
-
-    //setter
-    public void setPOID(String POID) throws IncorrectNumberOfValues{
-        if (POID == null || POID.isBlank()){
-            System.out.println("Please set a purchase order ID.");
-        }
-        else{
-            String[] newPOID = {POID};
-            table.addRow(newPOID);
-        }
-    }
-
-    public void setPrice(double price) throws IncorrectNumberOfValues{
-        if (price <= 0.0){
-            System.out.println("Please set a price for more than a 0.0");
-        }
-        else{
-            
-        }
-    }
-
-    public String setStatus(boolean statusApproval){
-        if (statusApproval = true){
-            return statusApprove();
-        }
-        else{
-            return  statusReject();
-        }
-    }
-
-    public void setItemID(String itemID){
-        if (Item.itemCode != null){
-            String[] newItemCode = {itemID};
-            table.updateRow(rowIndex, "ItemID", newItemCode);
-        }
-        else{
-            System.out.println("Item does not exist.");
-        }
+    public String status(){
+        return status;
     }
 
 
     //methods
     //generate purchase order with status pending as default
-    public void generatePurchaseOrder(String POID, String requisID, String itemID, double price, String status){
-
+    public boolean generatePO(){
+        try{
+            String[] newRowPO = {
+                POID,
+                getRequisID(),
+                String.join(";", getItemCode()),
+                String.valueOf(price),
+                status
+            };
+            table.addRow(newRowPO);
+            System.out.println("Purchase Order generated.");
+            return true;
+        }catch(IncorrectNumberOfValues e){
+            System.out.println("Failed to generate Purchase Order : Incorrect values.");
+        }
+        return false;
     }
 
-    //change status of the purchase order
-    public void updatePOStatus(Scanner sc, String POID, String status){
-
+    //update Purchase Order by POID
+    public boolean updatePOitem(String columnName, String newValue){
+        try {
+            int rowIndex = table.getRowIndex("POID", cell -> cell.equals(POID));
+            table.updateRow(rowIndex, columnName, newValue);
+            System.out.println("Updated successfully.");
+            return true;
+        } catch (ValueNotFound e) {
+            System.out.println("Error: Purchase Order not found.");
+        }
+        return false;
     }
 
     //view one purchase order
-    public void viewPurchaseOrder(){
+    public void viewPO(){
         System.out.println("Purchase Order ID : "+ POID);
         System.out.println("Requisition ID : "+ requisID);
         System.out.println("Item ID : "+ itemID);
@@ -117,9 +94,17 @@ public class PurchaseOrder{
         System.out.println("Status of approval : "+ status);
     }
 
-    //view list of purchase orders by ID
-    public void viewAllPO(){
-        System.out.println("----------Purchase Orders by ID----------");
-        
+    //delete purchase order by ID
+    public boolean deletePO(){
+        try {
+            int rowIndex = table.getRowIndex("POID", cell -> cell.equals(POID));
+            table.deleteRow(rowIndex);
+            System.out.println("Purchase Order deleted.");
+            return true;
+        } catch (ValueNotFound e) {
+            System.out.println("Error: Purchase Order not found.");
+        }
+        return false;
     }
+
 }
