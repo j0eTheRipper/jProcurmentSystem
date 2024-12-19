@@ -1,6 +1,1 @@
-requisID, requesterName, purchaseOrderID, approvalStatus, qtyPerID
-1, Joe, 1, PENDING, 2, 10
-1, Joe, 1, PENDING, 3, 56
-1, Joe, 1, PENDING, 5, 23
-1, Joe, 1, PENDING, 7, 13
-1, Joe, 1, PENDING, 1, 7
+requisID, requesterName, purchaseOrderID, approvalStatus
