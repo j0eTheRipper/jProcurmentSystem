@@ -449,5 +449,66 @@ public class ProcurmentSystem {
 //                scanner.next(); // Clear invalid input
 //            }
 //            return scanner.nextInt();
+
+        private static void purchaseManager(Scanner sc){
+            boolean exit = false;
+            System.out.println("==== Purchase Manager Menu ====");
+            System.out.println("1. Purchase Order Menu.");
+            System.out.println("2. Generate a new requisition.");
+            System.out.println("3. View all items.");
+            System.out.println("4. View all suppliers.");
+            System.out.println("5. View all requisitions.");
+            
+
+            int choices = sc.nextInt();
+            sc.nextLine();
+
+            switch(choices){
+                case 1:
+                case 2:
+                case 3:
+                    Item.displayAllItems(sc);
+                    System.out.println("Press enter key to continue...");
+                    sc.nextLine();
+                case 4:
+                    Supplier.displayAllSuppliers(sc);
+                    System.out.println("Press enter key to continue...");
+                    sc.nextLine();
+                case 5:
+
+            }
+
+        }
+
+        private static void purchaseManagerMenu(Scanner sc){
+            boolean exit = false;
+            System.out.println("==== Purchase Order Menu ====");
+            System.out.println("1. Create one.");
+            System.out.println("2. View all.");
+            System.out.println("3. Update a purchase order.");
+            System.out.println("4. Delete a purchase order");
+
+            int choices = sc.nextInt();
+            sc.nextLine();
+
+            switch(choices){
+                case 1:
+
+                case 2:
+                case 3:
+                    System.out.println("Enter the Purchase Order ID to update: ");
+                    
+                case 4:
+                System.out.println("Enter the Purchase Order ID to delete: ");
+                String deleteID = sc.nextLine();
+                if (deleteID != null){
+                    PurchaseOrder.delete();
+                }else{
+                    System.out.println("Error: please enter a Purchase Order ID.");
+                }
+
+            }
+        }
+
         }
 

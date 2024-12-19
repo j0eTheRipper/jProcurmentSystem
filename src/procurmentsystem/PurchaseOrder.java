@@ -7,7 +7,6 @@ import procurmentsystem.Table.*;
 
 public class PurchaseOrder extends Order{
     //attribute
-    private String POID;
     private requisition requisition;
 
     //file constructor
@@ -21,7 +20,7 @@ public class PurchaseOrder extends Order{
 
     //constructor
     public PurchaseOrder(String POID, requisition requisition){
-        this.POID = POID;
+        this.ID = POID;
         this.requisition = requisition;
         try {
             this.table = new Table("src/files/purchaseOrders.csv");
@@ -45,14 +44,14 @@ public class PurchaseOrder extends Order{
             String POID = row.get(0);
             String requisID = row.get(1);
 
-            requisition requisition = requisition.get("ReqID", id -> id.equals(requisID));
+            requisition requis = requisition.get("ReqID", id -> id.equals(requisID));
 
-            if (requisition == null){
+            if (requis == null){
                 System.out.println("Requisition not found with the given Purchase Order ID.");
                 return null;
             }
 
-            return new PurchaseOrder(POID, requisition);
+            return new PurchaseOrder(POID, requis);
         } catch (FileNotFoundException e) {
             System.out.println("Error: File name is incorrect.");
             return null;
@@ -62,7 +61,7 @@ public class PurchaseOrder extends Order{
         }
     }
 
-    public static List<requisition> get(String value, Function<String, Boolean> filter, boolean returnList){
+    public static List<requisition> getRequisitions(String value, Function<String, Boolean> filter, boolean returnList){
         try {
             Table table = new Table("src/files/purchaseOrders.csv");
             List<List<String>> rows = table.getRows(value, filter);
@@ -75,11 +74,12 @@ public class PurchaseOrder extends Order{
             List<requisition> requisitions = new ArrayList<>();
             for ( List<String> row : rows){
                 String requisID = row.get(1);
-                requisition requisition = requisition.get("ReqID", id -> id.equals(requisID));
-                if(requisition != null){
-                    requisition.add(requisition);
+                requisition req = requisition.get("ReqID", id -> id.equals(requisID));
+                if(req != null){
+                    requisition.add(req);
                 }
             }
+            return requisitions;
         } catch (FileNotFoundException e) {
             System.out.println("Error: File name is incorrect");
             return null;
@@ -90,7 +90,7 @@ public class PurchaseOrder extends Order{
     }
 
     public String getPOID(){
-        return POID;
+        return ID;
     }
     public requisition getRequisition(){
         return requisition;
@@ -101,8 +101,8 @@ public class PurchaseOrder extends Order{
         if(POID == null || !POID.matches("PO[0-9]+")){
             return false;
         }
-        this.update("POID", this.POID, POID);
-        this.POID = POID;
+        this.update("POID", this.ID, POID);
+        this.ID = POID;
         return true;
     }
 
@@ -120,7 +120,7 @@ public class PurchaseOrder extends Order{
     public boolean add(){
         try {
             String[] values = {
-                POID, //Purchase Order ID
+                ID, //Purchase Order ID
                 requisition.getRequisID() //requisition ID
             };
             table.addRow(values);
@@ -135,12 +135,12 @@ public class PurchaseOrder extends Order{
     @Override
     public boolean delete(){
         try {
-            int rowIndex = table.getRowIndex("POID", id -> id.equals(POID));
+            int rowIndex = table.getRowIndex("POID", id -> id.equals(ID));
             table.deleteRow(rowIndex);
-            System.out.println("The Purchase Order ID : "+ POID + "has been successfully deleted.");
+            System.out.println("The Purchase Order ID : "+ ID + "has been successfully deleted.");
             return true;
         } catch (ValueNotFound e) {
-            System.out.println("The Purchase Order ID : " + POID + "is not found.");
+            System.out.println("The Purchase Order ID : " + ID + "is not found.");
             return false;
         }
     }
@@ -158,6 +158,6 @@ public class PurchaseOrder extends Order{
 
     @Override
     public String toString(){
-        return String.format("%-15s | %-10s", POID, requisition.getRequisID());
+        return String.format("%-15s | %-10s", ID, requisition.getRequisID());
     }
 }
