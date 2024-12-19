@@ -11,9 +11,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import procurmentsystem.Table.InteractionsWithTable;
+import procurmentsystem.Table.Roles;
 import procurmentsystem.Table.Table;
 import procurmentsystem.Table.ValueNotFound;
 
@@ -21,12 +23,50 @@ public abstract class User extends InteractionsWithTable {
     // Define the path to the CSV file
     private static final String FILE_PATH = "C:\\Users\\elect\\OneDrive\\Documents\\NetBeansProjects\\AdminMY\\src\\adminmy\\users.csv";  // Adjust path if needed
     protected String username;
-    protected String role;
+    protected Roles role;
     protected String password;
     protected String firstName;
     protected String lastName;
+    protected String email;
 
-    
+    public static User get(String column, Function<String, Boolean> filter) {
+        try {
+            Table table = new Table("src/files/users.csv");
+            List<String> userData =  table.getRow(column, filter);
+            switch (userData.get(4)) {
+                case "admin":
+                    break;
+                case "finance manager":
+                    return new FinancialManager(
+                            userData.get(0),
+                            userData.get(1),
+                            userData.get(2),
+                            userData.get(3),
+                            userData.get(4)
+                    );
+                    break;
+                case "sales manager":
+                    break;
+                case "purchase manager":
+                    return new PurchaseManager(
+                            userData.get(0),
+                            userData.get(1),
+                            userData.get(2),
+                            userData.get(3),
+                            userData.get(4)
+                    );
+                    break;
+                case "inventory manager":
+                    break;
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("file not found");
+            return null;
+        } catch (ValueNotFound e) {
+            return null;
+        }
+    }
+
     // Login method to validate username and password
     public static User login(String email, String password) throws FileNotFoundException {
         Table table = new Table(FILE_PATH);

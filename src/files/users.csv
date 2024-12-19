@@ -1,4 +1,4 @@
-id,firstname,lastname,password,role, email
+id,firstname,lastname,password,role,email
 ID1, Mohamed,Yusuf,idkmain,admin,suf@gmail.com
 ID2,Youssef,Hammad,cyphermain,finance manager, youssef@gmail.com
 ID3,Abhay,Rana,jettmain,sales manager, abhay@gmail.com
