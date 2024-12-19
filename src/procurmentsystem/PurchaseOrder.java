@@ -1,111 +1,163 @@
 package procurmentsystem;
 
-import java.io.IOException;
-import java.util.List;
-import procurmentsystem.Table.IncorrectNumberOfValues;
-import procurmentsystem.Table.Table;
+import java.io.*;
+import java.util.*;
+import java.util.function.Function;
+import procurmentsystem.Table.*;
 
-public class PurchaseOrder{
+public class PurchaseOrder extends Order{
     //attribute
-    private Table table;
-    private String requisID;
-    private String itemID;
-    private List<Item> items;
     private String POID;
-    private String status;
-    private boolean statusApproval;
-    private double price;
+    private requisition requisition;
+
+    //file constructor
+    public PurchaseOrder(){
+        try {
+            this.table = new Table("src/files/purchaseOrders.csv");
+        } catch (FileNotFoundException e) {
+        System.out.println("Error: File not found.");
+        }
+    }
 
     //constructor
-    public PurchaseOrder(String POID,String status,String requisID, String itemID,double price, boolean statusApproval){
-        this.POID = POID; //Purchase order ID
-        this.status = "Pending";//defaulted to pending, waiting approve/reject
-        this.requisID = requisID;
-        this.itemID = itemID;
-        this.price = price;//total price
-        this.statusApproval = false; //default for approval
-
-    }
-
-    public PurchaseOrder() throws IOException{
-        this.table = new Table("src/files/purchaseOrders.csv");
-    }
-
-
-    //
-    public void readPOFile(){
-
-    }
-
-    //approve, reject, paid status
-    public String statusApprove(){
-        return this.status = "Approved";
-    }
-    public String statusReject(){
-        return this.status = "Rejected";
+    public PurchaseOrder(String POID, requisition requisition){
+        this.POID = POID;
+        this.requisition = requisition;
+        try {
+            this.table = new Table("src/files/purchaseOrders.csv");
+            this.ID = generateID();
+        } catch (FileNotFoundException e) {
+            System.out.println("Error: File not found.");
+        }
     }
 
     //getter
+    public static PurchaseOrder get(String value, Function<String, Boolean> filter){
+        try {
+            Table table = new Table("src/files/purchaseOrders.csv");
+            List<String> row = table.getRow(value, filter);
+
+            if(row == null || row.size() < 2){
+                System.out.println("No purchase Order found with matching criteria.");
+                return null;
+            }
+
+            String POID = row.get(0);
+            String requisID = row.get(1);
+
+            requisition requisition = requisition.get("ReqID", id -> id.equals(requisID));
+
+            if (requisition == null){
+                System.out.println("Requisition not found with the given Purchase Order ID.");
+                return null;
+            }
+
+            return new PurchaseOrder(POID, requisition);
+        } catch (FileNotFoundException e) {
+            System.out.println("Error: File name is incorrect.");
+            return null;
+        }catch (ValueNotFound e){
+            System.out.println("Error: Value not found.");
+            return null;
+        }
+    }
+
+    public static List<requisition> get(String value, Function<String, Boolean> filter, boolean returnList){
+        try {
+            Table table = new Table("src/files/purchaseOrders.csv");
+            List<List<String>> rows = table.getRows(value, filter);
+
+            if (rows == null || rows.isEmpty()){
+                System.out.println("No requisition found with matching filter.");
+                return null;
+            }
+
+            List<requisition> requisitions = new ArrayList<>();
+            for ( List<String> row : rows){
+                String requisID = row.get(1);
+                requisitions requisition = requisition.get("ReqID", id -> id.equals(requisID));
+                if(requisition != null){
+                    requisition.add(requisition);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("Error: File name is incorrect");
+            return null;
+        }catch (ValueNotFound e){
+            System.out.println("Error: Value not found.");
+            return null;
+        }
+    }
+
     public String getPOID(){
         return POID;
     }
-    public String getStatus(){
-        return status;
-    }
-    public double getPrice(){
-        return price;
+    public requisition getRequisition(){
+        return requisition;
     }
 
-    //setter
-    public void setPOID(String POID) throws IncorrectNumberOfValues{
-        if (POID == null || POID.isBlank()){
-            System.out.println("Please set a purchase order ID.");
+    //setters
+    public boolean setPOID(String POID){
+        if(POID == null || !POID.matches("PO[0-9]+")){
+            return false;
         }
-        else{
-            String[] newPOID = {POID};
-            table.addRow(newPOID);
+        this.update("POID", this.POID, POID);
+        this.POID = POID;
+        return true;
+    }
+
+    public boolean setRequisition(requisition requisition){
+        if(requisition == null){
+            return false;
+        }
+        this.update("ReqID", this.requisition.getRequisID(), requisition.getRequisID());
+        this.requisition = requisition;
+        return true;
+    }
+
+    //add
+    @Override
+    public boolean add(){
+        try {
+            String[] values = {
+                POID, //Purchase Order ID
+                requisition.getRequisID() //requisition ID
+            };
+            table.addRow(values);
+            return true;
+            
+        } catch (IncorrectNumberOfValues e) {
+            System.out.println("Incorrect input: " + e.getMessage());
+            return false;
+        }
+    }
+    //delete 
+    @Override
+    public boolean delete(){
+        try {
+            int rowIndex = table.getRowIndex("POID", id -> id.equals(POID));
+            table.deleteRow(rowIndex);
+            System.out.println("The Purchase Order ID : "+ POID + "has been successfully deleted.");
+            return true;
+        } catch (ValueNotFound e) {
+            System.out.println("The Purchase Order ID : " + POID + "is not found.");
+            return false;
         }
     }
 
-    public void setPrice(double price) throws IncorrectNumberOfValues{
-        if (price <= 0.0){
-            System.out.println("Please set a price for more than a 0.0");
-        }
-        else{
-
-        }
-    }
-
-    public String setStatus(boolean statusApproval){
-        if (statusApproval = true){
-            return statusApprove();
-        }
-        else{
-            return  statusReject();
+    @Override
+    protected boolean update(String columnName, String oldValue, String newValue){
+        try {
+            table.updateRow(table.getRowIndex(columnName, (x) -> x.equals(oldValue)), columnName, newValue);
+            return true;
+        } catch (ValueNotFound e) {
+            System.out.println("Error: Purchase Order ID not found.");
+            return false;
         }
     }
 
-
-    //methods
-    //generate purchase order with status pending as default
-    public void generatePurchaseOrder(String POID, String requisID, String itemID, double price, String status){
-
+    @Override
+    public String toString(){
+        return String.format("%-15s | %-10s", POID, requisition.getRequisID());
     }
-
-    //change status of the purchase order
-    public void updatePOStatus(String POID, String status){
-
-    }
-
-    //view one purchase order
-    public void viewPurchaseOrder(){
-        System.out.println("Purchase Order ID : "+ POID);
-        System.out.println("Requisition ID : "+ requisID);
-        System.out.println("Item ID : "+ itemID);
-        System.out.println("Price : "+ price);
-        System.out.println("Status of approval : "+ status);
-    }
-
-    //view list of purchase orders by ID
-    
 }
