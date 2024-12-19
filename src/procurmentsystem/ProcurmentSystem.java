@@ -27,7 +27,8 @@ public class ProcurmentSystem {
         System.out.println("\n==== Inventory Manager Menu ====");
             System.out.println("1. Supplier Management");
             System.out.println("2. Item Management");
-            System.out.println("3. Exit");
+            System.out.println("3. Sales Management");
+            System.out.println("4. Exit");
             System.out.print("Choose an option: ");
             int mainChoice = scanner.nextInt();
             scanner.nextLine();
