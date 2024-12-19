@@ -3,34 +3,39 @@ package procurmentsystem;
 import procurmentsystem.Table.*;
 
 import java.io.FileNotFoundException;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 public class requisition extends Order {
+
+    private Table requestedItemsTable;
     private String requisID;
     private String requesterName;
     private String PurchaseOrder;
     private String status;
-    private String itemCode;
-    private Integer qtyPerID;
-    public requisition(){
+    private Map<String, Integer> items;
+
+    public requisition() {
         try {
             this.table = new Table("src/files/requisition.csv");
-        }
-        catch (FileNotFoundException e){
+            this.requestedItemsTable = new Table("src/files/requestedItems.csv");
+            this.items = new HashMap<>();
+        } catch (FileNotFoundException e) {
             System.out.println("File not found");
         }
     }
-    // Constructor
-    public requisition(String requisID, String requesterName, String PurchaseOrder, String status, Date dateCreated, String itemCode, Integer qtyPerID) {
+
+
+    public requisition(String requisID, String requesterName, String PurchaseOrder, String status) {
         this.requisID= requisID;
         this.requesterName= requesterName;
         this.PurchaseOrder= PurchaseOrder;
         this.status= status;
-        this.itemCode= itemCode;
-        this.qtyPerID=qtyPerID;
         try {
+            requestedItemsTable = new Table("src/files/requestedItems.csv");
             table = new Table("src/files/requisition.csv");
             ID = generateID();
         } catch (FileNotFoundException e) {
@@ -38,32 +43,19 @@ public class requisition extends Order {
         }
     }
 
-    public requisition(String requisID, String requesterName, String PurchaseOrder, String status, String itemCode, String qtyPerID) {
-        this.requisID= requisID;
-        this.requesterName= requesterName;
-        this.PurchaseOrder= PurchaseOrder;
-        this.status= status;
-        this.itemCode= itemCode;
-        this.qtyPerID= Integer.parseInt(qtyPerID);
-        try {
-            table = new Table("src/files/requisition.csv");
-        } catch (FileNotFoundException e) {
-            System.out.println("File not found");
-        }
-    }
 
-    // Getters and Setters
+
     public static requisition get(String value, Function<String, Boolean> filter) {
         try {
             Table table = new Table("src/files/requisition.csv");
             List<String> row = table.getRow(value, filter);
 
-            if (row == null || row.size() < 8) {
+            if (row == null || row.size() < 6) {
                 System.out.println("No requisition found matching the criteria.");
                 return null;
             }
 
-            String requisID = row.get(6);
+            String requisID = row.get(4);
             requisition result = requisition.get("requisID", id -> id.equals(requisID));
 
             if (result == null) {
@@ -71,14 +63,7 @@ public class requisition extends Order {
                 return null;
             }
 
-            return new requisition(
-                    row.get(0),  // requisID
-                    row.get(1),  // requesterName
-                    row.get(2),  // purchaseOrderID
-                    row.get(3),  // approvalStatus
-                    row.get(4),  // itemCode
-                    row.get(5)   // qtyPerId
-            );
+            return new requisition();
         } catch (FileNotFoundException e) {
             System.out.println("File name is incorrect");
             return null;
@@ -100,12 +85,7 @@ public class requisition extends Order {
     public String getStatus() {
         return status;
     }
-    public String getItemCode() {
-        return itemCode;
-    }
-    public Integer getQtyPerID() {
-        return qtyPerID;
-    }
+
     // Setters with validation
     public boolean setRequisID(String requisID) {
         if (requisID == null || !requisID.matches("[0-9]+"))
@@ -139,72 +119,136 @@ public class requisition extends Order {
         return true;
     }
 
-    public boolean setItemCode(String itemCode) {
-        if (itemCode == null || !itemCode.matches("ITEM[0-9]+"))
-            return false;
-        this.update("itemCode", this.itemCode, itemCode);
-        this.itemCode = itemCode;
-        return true;
-    }
 
-    public boolean setQtyPerID(Integer qtyPerID) {
-        if (qtyPerID == null || qtyPerID <= 0)
-            return false;
-        this.update("qtyPerID", String.valueOf(this.qtyPerID), String.valueOf(qtyPerID));
-        this.qtyPerID = qtyPerID;
-        return true;
-    }
-
-
-
-    public boolean add() {
+    // Save a single item with its quantity to requestedItems.csv
+    private boolean saveRequestedItems() {
         try {
-            String[] values = {
-                    requisID,             // RequisID
-                    requesterName,        // RequesterName
-                    PurchaseOrder,        // PurchaseOrder
-                    status,               // Status
-                    itemCode,             // ItemCode
-                    String.valueOf(qtyPerID)  // QtyPerID
-            };
-
-            table.addRow(values);
+            for (Map.Entry<String, Integer> entry : items.entrySet()) {
+                String[] requestedItemData = {requisID, entry.getKey(), String.valueOf(entry.getValue())};
+                requestedItemsTable.addRow(requestedItemData);
+            }
+            System.out.println("All requested items saved for Requisition ID: " + requisID);
             return true;
         } catch (IncorrectNumberOfValues e) {
-            System.out.println("Incorrect Input: " + e.getMessage());
+            System.out.println("Error saving requested items: " + e.getMessage());
+            return false;
+        }
+    }
+
+    // Load items for this requisition from requestedItems.csv into HashMap
+    public void loadRequestedItems() {
+        try {
+            List<List<String>> rows = requestedItemsTable.getRows("requisID", id -> id.equals(requisID));
+            for (List<String> row : rows) {
+                String itemCode = row.get(1);
+                int qtyPerID = Integer.parseInt(row.get(2));
+                items.put(itemCode, qtyPerID);
+            }
+            System.out.println("Requested items loaded for Requisition ID: " + requisID);
+        } catch (ValueNotFound e) {
+            System.out.println("No requested items found for Requisition ID: " + requisID);
+        }
+    }
+
+    // Add an item and its quantity to the hashmap
+    public void addItem(String itemCode, int qtyPerID) {
+        if (qtyPerID <= 0) {
+            System.out.println("Error: Quantity must be greater than 0.");
+            return;
+        }
+        items.put(itemCode, items.getOrDefault(itemCode, 0) + qtyPerID);
+        System.out.println("Item added: ItemCode: " + itemCode + ", Quantity: " + qtyPerID);
+    }
+
+    // Remove an item
+    public boolean removeItem(String itemCode) {
+        if (items.containsKey(itemCode)) {
+            items.remove(itemCode);
+            System.out.println("Item removed: ItemCode: " + itemCode);
+            return true;
+        } else {
+            System.out.println("Error: ItemCode " + itemCode + " not found in this requisition.");
+            return false;
+        }
+    }
+
+    // Update the quantity for an item
+    public boolean updateItemQuantity(String itemCode, int newQtyPerID) {
+        if (items.containsKey(itemCode)) {
+            items.put(itemCode, newQtyPerID);
+            System.out.println("Updated quantity for ItemCode: " + itemCode + " to " + newQtyPerID);
+            return true;
+        } else {
+            System.out.println("Error: ItemCode " + itemCode + " not found in this requisition.");
             return false;
         }
     }
 
 
+
+
+    // Save the requisition to requisition.csv and its items to requestedItems.csv
+    @Override
+    public boolean add() {
+        try {
+            String[] requisitionData = {requisID, requesterName, PurchaseOrder, status};
+            table.addRow(requisitionData);
+            saveRequestedItems(); // Save items to requestedItems.csv
+            System.out.println("Requisition saved: ID: " + requisID);
+            return true;
+        } catch (IncorrectNumberOfValues e) {
+            System.out.println("Error saving requisition: " + e.getMessage());
+            return false;
+        }
+    }
+
+    // Delete the requisition and all its items
+    @Override
     public boolean delete() {
         try {
             int rowIndex = table.getRowIndex("requisID", id -> id.equals(requisID));
             table.deleteRow(rowIndex);
-            System.out.println("Requisition with ID " + requisID + " has been deleted.");
+
+            List<Integer> itemRows = requestedItemsTable.getRowIndexes("requisID", id -> id.equals(requisID));
+            for (int rowIndexToDelete : itemRows) {
+                requestedItemsTable.deleteRow(rowIndexToDelete);
+            }
+
+            System.out.println("Requisition with ID " + requisID + " and its items have been deleted.");
             return true;
         } catch (ValueNotFound e) {
-            System.out.println("Requisition with ID " + requisID + " was not found in the file.");
+            System.out.println("Error: Requisition with ID " + requisID + " not found for deletion.");
             return false;
         }
     }
-
 
     @Override
     protected boolean update(String columnName, String oldValue, String newValue) {
         try {
-            table.updateRow(table.getRowIndex(columnName, (x) -> x.equals(oldValue)), columnName, newValue);
+            table.updateRow(table.getRowIndex(columnName, value -> value.equals(oldValue)), columnName, newValue);
+            System.out.println("Updated " + columnName + " for Requisition ID: " + requisID);
             return true;
         } catch (ValueNotFound e) {
-            System.out.println("Requisition ID not found.");
+            System.out.println("Error: Value not found for update.");
             return false;
         }
     }
 
+    // Display requisition details and items
+    public void displayRequisition() {
+        System.out.println("Requisition ID: " + requisID);
+        System.out.println("Requester: " + requesterName);
+        System.out.println("Purchase Order: " + PurchaseOrder);
+        System.out.println("Status: " + status);
+        System.out.println("Items:");
+        for (Map.Entry<String, Integer> entry : items.entrySet()) {
+            System.out.println("- ItemCode: " + entry.getKey() + ", Quantity: " + entry.getValue());
+        }
+    }
     // Override toString method to display requisition details
     @Override
     public String toString() {
         return String.format("%-10s | %-15s | %-12s | %-15s | %-9s | %-5s",
-                requisID, requesterName, PurchaseOrder, status, itemCode, qtyPerID);
+                requisID, requesterName, PurchaseOrder, status);
     }
 }
