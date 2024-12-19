@@ -7,14 +7,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
 
-public class requisition extends Order {
+public class Requisition extends Order {
     private String requisID;
     private String requesterName;
     private String PurchaseOrder;
     private String status;
     private String itemCode;
     private Integer qtyPerID;
-    public requisition(){
+    public Requisition(){
         try {
             this.table = new Table("src/files/requisition.csv");
         }
@@ -23,7 +23,7 @@ public class requisition extends Order {
         }
     }
     // Constructor
-    public requisition(String requisID, String requesterName, String PurchaseOrder, String status, Date dateCreated, String itemCode, Integer qtyPerID) {
+    public Requisition(String requisID, String requesterName, String PurchaseOrder, String status, Date dateCreated, String itemCode, Integer qtyPerID) {
         this.requisID= requisID;
         this.requesterName= requesterName;
         this.PurchaseOrder= PurchaseOrder;
@@ -38,7 +38,7 @@ public class requisition extends Order {
         }
     }
 
-    public requisition(String requisID, String requesterName, String PurchaseOrder, String status, String itemCode, String qtyPerID) {
+    public Requisition(String requisID, String requesterName, String PurchaseOrder, String status, String itemCode, String qtyPerID) {
         this.requisID= requisID;
         this.requesterName= requesterName;
         this.PurchaseOrder= PurchaseOrder;
@@ -53,7 +53,7 @@ public class requisition extends Order {
     }
 
     // Getters and Setters
-    public static requisition get(String value, Function<String, Boolean> filter) {
+    public static Requisition get(String value, Function<String, Boolean> filter) {
         try {
             Table table = new Table("src/files/requisition.csv");
             List<String> row = table.getRow(value, filter);
@@ -64,14 +64,14 @@ public class requisition extends Order {
             }
 
             String requisID = row.get(6);
-            requisition result = requisition.get("requisID", id -> id.equals(requisID));
+            Requisition result = Requisition.get("requisID", id -> id.equals(requisID));
 
             if (result == null) {
                 System.out.println("Requisition not found for given Requisition ID.");
                 return null;
             }
 
-            return new requisition(
+            return new Requisition(
                     row.get(0),  // requisID
                     row.get(1),  // requesterName
                     row.get(2),  // purchaseOrderID
@@ -154,8 +154,6 @@ public class requisition extends Order {
         this.qtyPerID = qtyPerID;
         return true;
     }
-
-
 
     public boolean add() {
         try {
