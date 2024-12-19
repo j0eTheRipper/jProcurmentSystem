@@ -11,7 +11,16 @@ public abstract class InteractionsWithTable {
     abstract public String toString();
     abstract protected boolean add();
     abstract protected boolean delete();
-    abstract protected boolean update(String columnName, String oldValue, String newValue);
+
+    protected boolean update(String columnName, String oldValue, String newValue) {
+        try {
+            table.updateRow(table.getRowIndex(columnName, (x) -> x.equals(oldValue)), columnName, newValue);
+            return true;
+        } catch(ValueNotFound e){
+            System.out.println("ID not found.");
+            return false;
+        }
+    }
 
     protected String generateID() throws FileNotFoundException {
         List<String> lastRow = table.getLastRow();

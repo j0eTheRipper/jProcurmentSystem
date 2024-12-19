@@ -3,10 +3,8 @@ package procurmentsystem;
 import procurmentsystem.Table.*;
 
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 
 public class requisition extends Order {
@@ -29,8 +27,7 @@ public class requisition extends Order {
     }
 
 
-    public requisition(String requisID, String requesterName, String PurchaseOrder, String status) {
-        this.requisID= requisID;
+    public requisition(String requesterName, String PurchaseOrder, String status) {
         this.requesterName= requesterName;
         this.PurchaseOrder= PurchaseOrder;
         this.status= status;
