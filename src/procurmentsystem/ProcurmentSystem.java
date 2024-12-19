@@ -17,45 +17,45 @@ public class ProcurmentSystem {
         boolean exit = false;
 
         while (!exit) {
-            
+
         }
         scanner.close();
     }
-    
+
     private static void supplyManager() {
 
         System.out.println("\n==== Inventory Manager Menu ====");
-            System.out.println("1. Supplier Management");
-            System.out.println("2. Item Management");
-            System.out.println("3. Sales Management");
-            System.out.println("4. Exit");
-            System.out.print("Choose an option: ");
-            int mainChoice = scanner.nextInt();
-            scanner.nextLine();
+        System.out.println("1. Supplier Management");
+        System.out.println("2. Item Management");
+        System.out.println("3. Sales Management");
+        System.out.println("4. Exit");
+        System.out.print("Choose an option: ");
+        int mainChoice = scanner.nextInt();
+        scanner.nextLine();
 
-            switch (mainChoice) {
-                case 1:
-                    supplierMenu(scanner);
-                    break;
+        switch (mainChoice) {
+            case 1:
+                supplierMenu(scanner);
+                break;
 
-                case 2:
-                    itemMenu(scanner);
-                    break;
+            case 2:
+                itemMenu(scanner);
+                break;
 
-                case 3:
-                    salesMenu(scanner);
-                    break;
+            case 3:
+                salesMenu(scanner);
+                break;
 
-                case 4:
-                    exit = true;
-                    System.out.println("Exiting the system. Goodbye!");
-                    break;
+            case 4:
+                exit = true;
+                System.out.println("Exiting the system. Goodbye!");
+                break;
 
-                default:
-                    System.out.println("Invalid option. Please try again.");
-            }
+            default:
+                System.out.println("Invalid option. Please try again.");
+        }
     }
-    
+
     private static void supplierMenu(Scanner scanner) throws IOException {
         boolean backToMain = false;
 
@@ -312,142 +312,125 @@ public class ProcurmentSystem {
         }
     }
 
-        public static void salesMenu(Scanner scanner) {
-            int choice = -1;
+    public static void salesMenu(Scanner scanner) {
+        int choice = -1;
 
-            while (choice != 7) { // Exit condition
-                System.out.println("\n=== Sales Manager Menu ===");
-                System.out.println("1. List of Items (View)");
-                System.out.println("2. Daily Item-wise Sales Entry");
-                System.out.println("3. Sales Report");
-                System.out.println("4. Stock Level");
-                System.out.println("5. Create Requisition");
-                System.out.println("6. List of Purchase Orders");
-                System.out.println("7. Exit");
-                System.out.print("Enter your choice: ");
+        while (choice != 7) { // Exit condition
+            System.out.println("\n=== Sales Manager Menu ===");
+            System.out.println("1. List of Items (View)");
+            System.out.println("2. Add Sales Entry");
+            System.out.println("3. Edit Sales Entry");
+            System.out.println("4. Delete Sales Entry");
+            System.out.println("5. Sales Report");
+            System.out.println("6. View Stock Level");
+            System.out.println("7. Exit");
+            System.out.print("Enter your choice: ");
 
-               choice = scanner.nextInt();
+            choice = scanner.nextInt();
+            scanner.nextLine(); // Clear buffer
 
-                switch (choice) {
-                    case 1 -> listItems(scanner);
-//                    case 2 -> manageSalesEntry();
-//                    case 3 -> viewSalesReport();
-//                    case 4 -> viewStockLevel();
-//                    case 5 -> createRequisition();
-//                    case 6 -> viewPurchaseOrders();
-                    case 7 -> System.out.println("Exiting Sales Manager Menu...");
-                    default -> System.out.println("Invalid choice! Please enter a number between 1 and 7.");
-                }
+            switch (choice) {
+                case 1 -> listItems(scanner);
+                case 2 -> addSalesEntry(scanner);
+                case 3 -> editSalesEntry(scanner);
+                case 4 -> deleteSalesEntry(scanner);
+                case 5 -> viewSalesReport();
+                case 6 -> viewStockLevel();
+                case 7 -> System.out.println("Exiting Sales Manager Menu...");
+                default -> System.out.println("Invalid choice! Please enter a number between 1 and 7.");
             }
         }
+    }
 
-        // 1. List of Items (View)
-        private static void listItems(Scanner scanner) {
-            Item.displayAllItems(scanner);
-            System.out.println("Press enter key to continue...");
-            scanner.nextLine();
-        }
+    // 1. List of Items (View)
+    private static void listItems(Scanner scanner) {
+        Item.displayAllItems(scanner);
+        System.out.println("Press enter key to continue...");
+        scanner.nextLine();
+    }
 
-        // 2. Daily Item-wise Sales Entry (Add/Save/Delete/Edit)
-//        private void manageSalesEntry() {
-//            System.out.println("\n--- Daily Item-wise Sales Entry ---");
-//            System.out.println("1. Add Sales Entry");
-//            System.out.println("2. Edit Sales Entry");
-//            System.out.println("3. Delete Sales Entry");
-//            System.out.print("Choose an option: ");
-//            int choice = scanner.nextInt();
-//
-//            switch (choice) {
-//                case 1 -> addSalesEntry();
-//                case 2 -> editSalesEntry();
-//                case 3 -> deleteSalesEntry();
-//                default -> System.out.println("Invalid choice!");
-//            }
-//        }
-//
-//        private void addSalesEntry() {
-//            System.out.print("Enter Item Code: ");
-//            String itemCode = scanner.next();
-//
-//            System.out.print("Enter Quantity Sold: ");
-//            int quantity = scanner.nextInt();
-//
-//            try {
-//                salesManager.addSalesEntry(itemCode, date, quantity);
-//                System.out.println("Sales entry added successfully.");
-//            } catch (Exception e) {
-//                System.out.println("Error: " + e.getMessage());
-//            }
-//        }
-//
-//        private void editSalesEntry() {
-//            System.out.print("Enter Sale ID to Edit: ");
-//            int saleID = scanner.nextInt();
-//
-//            System.out.print("Enter New Quantity Sold: ");
-//            int newQuantity = scanner.nextInt();
-//
-//            try {
-//                salesManager.editSalesEntry(saleID, newQuantity);
-//                System.out.println("Sales entry updated successfully.");
-//            } catch (Exception e) {
-//                System.out.println("Error: " + e.getMessage());
-//            }
-//        }
-//
-//        private void deleteSalesEntry() {
-//            System.out.print("Enter Sale ID to Delete: ");
-//            int saleID = scanner.nextInt();
-//
-//            try {
-//                salesManager.deleteSalesEntry(saleID);
-//                System.out.println("Sales entry deleted successfully.");
-//            } catch (Exception e) {
-//                System.out.println("Error: " + e.getMessage());
-//            }
-//        }
-//
-//        // 3. Sales Report
-//        private void viewSalesReport() {
-//            System.out.println("\n--- Sales Report ---");
-//            // Placeholder for Sales Report
-//            System.out.println("Sales report functionality to be implemented.");
-//        }
-//
-//        // 4. Stock Level
-//        private void viewStockLevel() {
-//            System.out.println("\n--- Stock Levels ---");
-//            salesManager.viewItems(); // Assume items.csv contains stock levels
-//        }
-//
-//        // 5. Create Requisition
-//        private void createRequisition() {
-//            System.out.print("Enter Item Code: ");
-//            String itemCode = scanner.next();
-//
-//            System.out.print("Enter Quantity: ");
-//            int quantity = scanner.nextInt();
-//
-//            try {
-//                salesManager.createRequisition();
-//                System.out.println("Requisition created successfully.");
-//            } catch (Exception e) {
-//                System.out.println("Error: " + e.getMessage());
-//            }
-//        }
-//
-//        // 6. List of Purchase Orders
-//        private void viewPurchaseOrders() {
-//            System.out.println("\n--- List of Purchase Orders ---");
-//            salesManager.viewPurchaseOrders();
-//        }
-//
-//        // Helper Method: Get valid integer input
-//        private int scanner.nextInt() {
-//            while (!scanner.hasNextInt()) {
-//                System.out.println("Invalid input! Please enter a valid number.");
-//                scanner.next(); // Clear invalid input
-//            }
-//            return scanner.nextInt();
+    // 2. Add Sales Entry
+    private static void addSalesEntry(Scanner scanner) {
+        try {
+            System.out.print("Enter Item Code: ");
+            String itemCode = scanner.nextLine();
+
+            // Validate item exists
+            Item item = Item.get("itemCode", code -> code.equals(itemCode));
+            if (item == null) {
+                System.out.println("Error: Item with code " + itemCode + " not found.");
+                return;
+            }
+
+            System.out.println("Current Stock: " + item.getItemQuantity());
+            System.out.print("Enter Quantity Sold: ");
+            int quantity = scanner.nextInt();
+            scanner.nextLine(); // Clear buffer
+
+            // Validate stock availability
+            if (quantity > item.getItemQuantity()) {
+                System.out.println("Error: Insufficient stock for " + itemCode + ". Available: " + item.getItemQuantity());
+                return;
+            } else if (quantity <= 0) {
+                System.out.println("Error: Quantity must be greater than 0.");
+                return;
+            }
+
+            // Create and add the sale
+            Sale sale = new Sale(itemCode, quantity);
+            if (sale.add()) {
+                System.out.println("Sale added successfully!");
+            } else {
+                System.out.println("Error: Could not add the sale.");
+            }
+        } catch (Exception e) {
+            System.out.println("An error occurred: " + e.getMessage());
         }
+    }
+
+    // 3. Edit Sales Entry
+    private static void editSalesEntry(Scanner scanner) {
+        try {
+            System.out.print("Enter Sale ID to Edit: ");
+            String saleID = scanner.nextLine();
+
+            System.out.print("Enter New Quantity Sold: ");
+            int newQuantity = scanner.nextInt();
+            scanner.nextLine(); // Clear buffer
+
+            Sale sale = new Sale(); // Sale instance for operations
+            sale.update("qty", "", String.valueOf(newQuantity)); // Pass new quantity for update
+            System.out.println("Sale updated successfully.");
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    // 4. Delete Sales Entry
+    private static void deleteSalesEntry(Scanner scanner) {
+        try {
+            System.out.print("Enter Sale ID to Delete: ");
+            String saleID = scanner.nextLine();
+
+            Sale sale = new Sale(); // Sale instance for operations
+            sale.delete(); // Use delete method from Sale class
+            System.out.println("Sale deleted successfully.");
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    // 5. Sales Report
+    private static void viewSalesReport() {
+        System.out.println("\n--- Sales Report ---");
+        // Placeholder for Sales Report
+        System.out.println("Sales report functionality to be implemented.");
+    }
+
+    // 6. View Stock Level
+    private static void viewStockLevel() {
+        System.out.println("\n--- Stock Levels ---");
+        Item.displayAllItems(new Scanner(System.in)); // Display items and stock
+    }
+}
 
