@@ -75,7 +75,7 @@ public class PurchaseOrder extends Order{
             List<requisition> requisitions = new ArrayList<>();
             for ( List<String> row : rows){
                 String requisID = row.get(1);
-                requisitions requisition = requisition.get("ReqID", id -> id.equals(requisID));
+                requisition requisition = requisition.get("ReqID", id -> id.equals(requisID));
                 if(requisition != null){
                     requisition.add(requisition);
                 }
