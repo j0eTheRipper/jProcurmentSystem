@@ -2,10 +2,17 @@
 package procurmentsystem;
 
 
+import procurmentsystem.Table.Roles;
+
 public class FinancialManager extends User {
   
     public FinancialManager(String ID, String firstName, String lastName, String password, String email) {
-        
+        this.ID = ID;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+        this.email = email;
+        this.role = Roles.FinancialManager;
     }
 
     @Override

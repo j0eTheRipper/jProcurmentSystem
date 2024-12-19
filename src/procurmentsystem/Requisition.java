@@ -23,8 +23,7 @@ public class requisition extends Order {
         }
     }
     // Constructor
-    public requisition(String requisID, String requesterName, String PurchaseOrder, String status, Date dateCreated, String itemCode, Integer qtyPerID) {
-        this.requisID= requisID;
+    public requisition(String requesterName, String PurchaseOrder, String status, Date dateCreated, String itemCode, Integer qtyPerID) {
         this.requesterName= requesterName;
         this.PurchaseOrder= PurchaseOrder;
         this.status= status;
