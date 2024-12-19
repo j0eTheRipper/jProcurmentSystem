@@ -1,9 +1,11 @@
 package procurmentsystem;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Scanner;
 import procurmentsystem.Table.*;
 
-public class PurchaseOrder extends requisition{
+public class PurchaseOrder {
     //attribute
     private Table table;
     private String POID;
@@ -34,7 +36,7 @@ public class PurchaseOrder extends requisition{
         return this.status = "Rejected";
     }
 
-    //Getter 
+    //Getter
     public String POID(){
         return POID;
     }
@@ -56,10 +58,16 @@ public class PurchaseOrder extends requisition{
     //generate purchase order with status pending as default
     public boolean generatePO(){
         try{
+            //making sure fields are not empty/null
+            if (POID == null || requisID == null || itemID == null || price < 0){
+                System.out.println("Error: Purchase Order is incomplete.");
+                return false;
+            }
+
             String[] newRowPO = {
                 POID,
-                getRequisID(),
-                String.join(";", getItemCode()),
+                requisID,
+                itemID,
                 String.valueOf(price),
                 status
             };
@@ -87,11 +95,17 @@ public class PurchaseOrder extends requisition{
 
     //view one purchase order
     public void viewPO(){
-        System.out.println("Purchase Order ID : "+ POID);
-        System.out.println("Requisition ID : "+ requisID);
-        System.out.println("Item ID : "+ itemID);
-        System.out.println("Price : "+ price);
-        System.out.println("Status of approval : "+ status);
+        try {
+            List<String> row = table.getRow("POID", cell -> cell.equals(POID));
+            System.out.println("----- Purchase Order Details -----");
+            System.out.println("POID : " + row.get(0));
+            System.out.println("Requisition ID : " + row.get(1));
+            System.out.println("Items : " + row.get(2));
+            System.out.println("Total Price : " + row.get(3));
+            System.out.println("Status : " + row.get(4));
+        } catch (ValueNotFound e) {
+            System.out.println("Error : Purchase Order not found.");
+        }
     }
 
     //delete purchase order by ID
@@ -105,6 +119,69 @@ public class PurchaseOrder extends requisition{
             System.out.println("Error: Purchase Order not found.");
         }
         return false;
+    }
+
+    //input
+    public void enterPODetails(){
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter the PURCHASE ORDER ID: ");
+        this.POID = sc.nextLine();
+        System.out.println("Enter REQUISITION ID: ");
+        this.requisID = sc.nextLine();
+        System.out.println("Enter ITEM ID: ");
+        this.itemID = sc.nextLine();
+        System.out.println("Enter PRICE: ");
+        while (true) {
+            try {
+                this.price = Double.parseDouble(sc.nextLine());
+                break;
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Enter a valid price (default : 0.0) : ");
+            }
+            
+        }
+        this.status = "Pending"; //default
+    }
+
+    //update status
+    public void updateStatus(){
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Current status : " + this.status);
+        System.out.println("Enter new status (Input 1 for Approved, 0 for Rejected): ");
+
+        int choice;
+        while (true){
+            try {
+                choice = Integer.parseInt(sc.nextLine());
+                if (choice == 1){
+                    statusApprove();
+                    System.out.println("Status successfully updated to Approved.");
+                    break;
+                }
+                else if(choice == 0){
+                    statusReject();
+                    System.out.println("Status successfully updated to Rejected.");
+                    break;
+                }
+                else{
+                    System.out.println("Error: Invalid input. only input 1 or 0: ");
+                }
+            } catch (NumberFormatException e) {
+            }
+        }
+    }
+
+
+    //override to string
+    @Override
+    public String toString(){
+        return "PurchaseOrder{" +
+        "POID='" + POID + '\'' +
+        ", requisitionID='" +requisID +'\'' +
+        ", items='" + itemID + '\'' +
+        ", price='" + price +
+        ", status='" + status + '\'' +
+        '}';
     }
 
 }
