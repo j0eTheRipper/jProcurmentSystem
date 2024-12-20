@@ -1,4 +1,5 @@
-uid,firstname,lastname,password,role
-u1231,youssef,hammad,kalsdjf,fininace
-1231,1231,1231,1231,skldjf
-1231,1231,1231,1231,skldjf
+id,firstname,lastname,password,role,email
+ID1, Mohamed,Yusuf,idkmain,admin,suf@gmail.com
+ID2,Youssef,Hammad,cyphermain,finance manager, youssef@gmail.com
+ID3,Abhay,Rana,jettmain,sales manager, abhay@gmail.com
+ID4,jack,lantern,sovamain,purchase manager,abc@gmail.com

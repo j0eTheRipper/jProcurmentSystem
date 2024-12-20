@@ -689,7 +689,7 @@ public class ProcurmentSystem {
                     sc.nextLine();
                     purchaseManagerMenu(sc);
                 case 5:
-                    purchaseManagerMenu(sc);
+                    purchaseManager(sc);
             }
         }
 
