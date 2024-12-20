@@ -1,7 +1,9 @@
 package procurmentsystem;
 
+import java.awt.*;
 import java.io.*;
 import java.util.*;
+import java.util.List;
 import java.util.function.Function;
 import procurmentsystem.Table.*;
 
@@ -134,6 +136,7 @@ public class PurchaseOrder extends Order{
             case "PAID" -> Status.PAID;
             case "APPROVED" -> Status.APPROVED;
             case "REJECTED" -> Status.REJECTED;
+            case "STOCKED" -> Status.STOCKED;
             default -> null;
         };
         return new POData(purchaseManager, financialManager, status);
@@ -202,8 +205,21 @@ public class PurchaseOrder extends Order{
         if (newStatus == status) return;
 
         if (newStatus == Status.PAID) {
-            if (status == Status.APPROVED)
+            if (status == Status.APPROVED) {
                 supplier.setDueAmount(supplier.getDueAmount() - this.totalPrice);
+            }
+            try {
+                Table paymentHistory = new Table("src/files/PaymentHistory.csv");
+                String[] data = {
+                        ID,
+                        supplier.getsupplierID(),
+                        String.valueOf(this.totalPrice),
+                        new Date().toString()
+                };
+                paymentHistory.addRow(data);
+            } catch (FileNotFoundException | IncorrectNumberOfValues e) {
+                throw new RuntimeException(e);
+            }
         } else if (newStatus == Status.APPROVED) {
             supplier.setDueAmount(supplier.getDueAmount() + this.totalPrice);
         }
@@ -216,6 +232,14 @@ public class PurchaseOrder extends Order{
     public void setApprovedBy(FinancialManager financialManager) {
         update("ApprovedBy", "", financialManager.getID());
         approvedBy = financialManager;
+    }
+
+    public List<Item> getItems(){
+        List<Item> items = new ArrayList<>();
+        this.items.forEach((item, ignored) -> {
+            items.add(item);
+        });
+        return items;
     }
 
     //delete
