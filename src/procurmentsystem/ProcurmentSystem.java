@@ -510,7 +510,7 @@ public class ProcurmentSystem {
                 case 1:
                     purchaseManagerMenu(sc);
                 case 2:
-
+                case 3:
                     Item.displayAllItems(sc);
                     System.out.println("Press enter key to continue...");
                     sc.nextLine();
@@ -552,7 +552,7 @@ public class ProcurmentSystem {
 
             switch(choices){
                 case 1:
-
+                    
 
                 case 2:
                     List<PurchaseOrder> allOrders = PurchaseOrder.getMultiple("POID", x -> true);
@@ -586,8 +586,8 @@ public class ProcurmentSystem {
         private static void purchaseOrderUpdateMenu(Scanner sc){
             boolean exit =false;
             System.out.println("==== Update Purchase Order ====");
-            System.out.println("1. Update price.");
-            System.out.println("2. Update ");
+            System.out.println("1.  ");
+            System.out.println("2.  ");
         }
 
         }
