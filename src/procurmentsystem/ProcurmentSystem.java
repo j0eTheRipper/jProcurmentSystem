@@ -6,15 +6,12 @@ package procurmentsystem;
 
 
 import procurmentsystem.Table.Status;
-
-import java.awt.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-import procurmentsystem.Table.Status;
 
 public class ProcurmentSystem {
     public static void main(String[] args) throws IOException {
