@@ -5,6 +5,7 @@
 package procurmentsystem;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -458,6 +459,7 @@ public class ProcurmentSystem {
             System.out.println("3. View all items.");
             System.out.println("4. View all suppliers.");
             System.out.println("5. View all requisitions.");
+            System.out.println("6. Exit.");
             
 
             int choices = sc.nextInt();
@@ -465,16 +467,31 @@ public class ProcurmentSystem {
 
             switch(choices){
                 case 1:
+                    purchaseManagerMenu(sc);
                 case 2:
-                case 3:
+
                     Item.displayAllItems(sc);
                     System.out.println("Press enter key to continue...");
                     sc.nextLine();
+                    purchaseManagerMenu(sc);
                 case 4:
                     Supplier.displayAllSuppliers(sc);
                     System.out.println("Press enter key to continue...");
                     sc.nextLine();
+                    purchaseManagerMenu(sc);
+
                 case 5:
+                    List<requisition> allReq = requisition.getMultiple("requisID", x-> true);
+                    if(allReq != null || !allReq.isEmpty()){
+                        for(requisition reqs : allReq){
+                            System.out.println(reqs);
+                        }
+                    }else{
+                        System.out.println("No requisition is found.");
+                    }
+                case 6:
+                    System.out.println("Exiting...");
+                    break;
 
             }
 
@@ -486,7 +503,8 @@ public class ProcurmentSystem {
             System.out.println("1. Create one.");
             System.out.println("2. View all.");
             System.out.println("3. Update a purchase order.");
-            System.out.println("4. Delete a purchase order");
+            System.out.println("4. Delete a purchase order.");
+            System.out.println("5. Back to main menu.");
 
             int choices = sc.nextInt();
             sc.nextLine();
@@ -494,20 +512,41 @@ public class ProcurmentSystem {
             switch(choices){
                 case 1:
 
-                case 2:
-                case 3:
-                    System.out.println("Enter the Purchase Order ID to update: ");
-                    
-                case 4:
-                System.out.println("Enter the Purchase Order ID to delete: ");
-                String deleteID = sc.nextLine();
-                if (deleteID != null){
-                    PurchaseOrder.delete();
-                }else{
-                    System.out.println("Error: please enter a Purchase Order ID.");
-                }
 
+                case 2:
+                    List<PurchaseOrder> allOrders = PurchaseOrder.getMultiple("POID", x -> true);
+                    if(allOrders != null || !allOrders.isEmpty()){
+                        for(PurchaseOrder orders : allOrders){
+                            System.out.println(orders);
+                        }
+                    }else{
+                        System.out.println("No purchase orders found.");
+                    }
+                    break;
+                case 3:
+                    purchaseOrderUpdateMenu(sc);
+                case 4:
+                    System.out.println("Enter a purchase order ID to delete: ");
+                    String delPurchaseOrder = sc.nextLine();
+                    PurchaseOrder delOrder = PurchaseOrder.get(delPurchaseOrder, x -> x.equals(delPurchaseOrder));
+
+                    if (delOrder != null){
+                        delOrder.delete();
+                        System.out.println("the purchase order "+delOrder+" has been deleted.");
+                    }else{
+                        System.out.println("Error: Purchase order not found.");
+                    }
+                    break;
+                case 5:
+                    purchaseManagerMenu(sc);
             }
+        }
+
+        private static void purchaseOrderUpdateMenu(Scanner sc){
+            boolean exit =false;
+            System.out.println("==== Update Purchase Order ====");
+            System.out.println("1. Update price.");
+            System.out.println("2. Update ");
         }
 
         }

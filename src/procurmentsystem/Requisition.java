@@ -3,6 +3,7 @@ package procurmentsystem;
 import procurmentsystem.Table.*;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
@@ -85,6 +86,41 @@ public class requisition extends Order {
             System.out.println("Value not found!");
             return null;
         }
+    }
+
+    public static List<requisition> getMultiple(String column, Function<String, Boolean> filter) {
+        try {
+            Table table = new Table("src/files/requisition.csv");
+            List<List<String>> requisitionList = table.getRows(column, filter);
+            List<requisition> result = new ArrayList<>();
+            for (List<String> rl : requisitionList) {
+                ReqData data = getReqData(rl);
+                result.add( new requisition(
+                        //what to put in req
+                ));
+            }
+            return result;
+        } catch (FileNotFoundException e) {
+            System.out.println("file not found");
+            return null;
+        } catch (ValueNotFound e) {
+            return null;
+        }
+    }
+    private static ReqData getReqData(List<String> RequisitionData) {
+        saleManager saleManager = (saleManager) User.get("id", (x) -> x.equals(RequisitionData.get(4)));
+        FinancialManager financialManager = (FinancialManager) User.get("id", (x) -> x.equals(RequisitionData.get(5)));
+        Status status = switch (RequisitionData.get(3)) {
+            case "Pending" -> Status.PENDING;
+            case "Paid" -> Status.PAID;
+            case "Approved" -> Status.APPROVED;
+            case "Rejected" -> Status.REJECTED;
+            default -> null;
+        };
+        return new ReqData(saleManager, financialManager, status);
+    }
+
+    private record ReqData(saleManager saleManager, PurchaseManager PurchaseManager, Status status) {
     }
 
     public String getRequisID() {
