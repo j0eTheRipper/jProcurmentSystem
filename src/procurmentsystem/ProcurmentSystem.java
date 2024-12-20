@@ -6,15 +6,12 @@ package procurmentsystem;
 
 
 import procurmentsystem.Table.Status;
-
-import java.awt.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-import procurmentsystem.Table.Status;
 
 public class ProcurmentSystem {
     public static void main(String[] args) throws IOException {
@@ -383,9 +380,18 @@ public class ProcurmentSystem {
                     listItems(scanner);
                     promptToContinue(scanner); // Ask user to continue after viewing items
                 }
-                case 2 -> addSale(scanner);
-                case 3 -> editSale(scanner);
-                case 4 -> deleteSale(scanner);
+                case 2 -> {
+                    addSale(scanner);
+                    promptToContinue(scanner);
+                }
+                case 3 -> {
+                    editSale(scanner);
+                    promptToContinue(scanner);
+                }
+                case 4 -> {
+                    deleteSale(scanner);
+                    promptToContinue(scanner);
+                }
                 case 5 -> {
                     System.out.println("\n=== Sales Report ===");
                     Sale sale = new Sale();
@@ -448,9 +454,7 @@ public class ProcurmentSystem {
 
             // Call update with the correct saleID
             boolean success = sale.update("qty", "", String.valueOf(newQuantity));
-            if (success) {
-                System.out.println("Sale updated successfully.");
-            } else {
+            if (!success) {
                 System.out.println("Failed to update the sale. Please check the Sale ID and try again.");
             }
         } catch (Exception e) {
@@ -469,9 +473,7 @@ public class ProcurmentSystem {
 
             // Call delete
             boolean success = sale.delete();
-            if (success) {
-                System.out.println("Sale deleted successfully.");
-            } else {
+            if (!success) {
                 System.out.println("Failed to delete the sale. Please check the Sale ID and try again.");
             }
         } catch (Exception e) {
