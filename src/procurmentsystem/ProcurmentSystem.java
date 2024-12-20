@@ -36,6 +36,7 @@ public class ProcurmentSystem {
         System.out.println("4. exit");
         System.out.print("Choose an option: ");
         int choice = scanner.nextInt();
+        FinancialManager fm = (FinancialManager) User.get("email", x -> x.equals("youssef@gmail.com"));
         switch (choice) {
             case 1:
                 System.out.println("==== Purchase Orders ====");
@@ -60,9 +61,9 @@ public class ProcurmentSystem {
                 if (choice == 1) {
                     System.out.print("1. Approve\n2. Reject\n3. Pay\nChoose an option: ");
                     choice = scanner.nextInt();
-                    if (choice == 1) purchaseOrder.setStatus(Status.APPROVED);
-                    else if (choice == 2) purchaseOrder.setStatus(Status.REJECTED);
-                    else if (choice == 3) purchaseOrder.setStatus(Status.PAID);
+                    if (choice == 1) purchaseOrder.setStatus(Status.APPROVED, fm);
+                    else if (choice == 2) purchaseOrder.setStatus(Status.REJECTED, fm);
+                    else if (choice == 3) purchaseOrder.setStatus(Status.PAID, fm);
                 } else if (choice == 2) {
                     System.out.println("TBA");
                 }

@@ -198,7 +198,7 @@ public class PurchaseOrder extends Order{
         }
     }
 
-    public void setStatus(Status newStatus) {
+    public void setStatus(Status newStatus, FinancialManager FM) {
         if (newStatus == status) return;
 
         if (newStatus == Status.PAID) {
@@ -207,8 +207,15 @@ public class PurchaseOrder extends Order{
         } else if (newStatus == Status.APPROVED) {
             supplier.setDueAmount(supplier.getDueAmount() + this.totalPrice);
         }
+
         update("Status", "", String.valueOf(newStatus));
         status = newStatus;
+        setApprovedBy(FM);
+    }
+
+    public void setApprovedBy(FinancialManager financialManager) {
+        update("ApprovedBy", "", financialManager.getID());
+        approvedBy = financialManager;
     }
 
     //delete
