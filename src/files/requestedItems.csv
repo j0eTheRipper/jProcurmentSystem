@@ -1,4 +1,4 @@
-requisitionID,itemID,quantity
+requisID, itemCode, itemQuantity
 1,1,5
 1,2,3
 1,4,5
