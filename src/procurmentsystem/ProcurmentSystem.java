@@ -6,8 +6,6 @@ package procurmentsystem;
 
 
 import procurmentsystem.Table.Status;
-
-import java.awt.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
@@ -15,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import procurmentsystem.Table.Status;
+import procurmentsystem.Table.Table;
 import procurmentsystem.Table.ValueNotFound;
 
 public class ProcurmentSystem {
@@ -23,17 +22,18 @@ public class ProcurmentSystem {
         boolean exit = false;
 
         while (!exit) {
-            itemMenu(scanner);
+
+            // menu methods here
         }
         scanner.close();
     }
 
-    private static void fm() {
+    private static void fm() throws FileNotFoundException, ValueNotFound {
         Scanner scanner = new Scanner(System.in);
         System.out.println("\n==== Financial Manager ====");
         System.out.println("1. Purchase Order Management");
         System.out.println("2. Stock status");
-        System.out.println("3. Supplier Payments Management");
+        System.out.println("3. Supplier Payments");
         System.out.println("4. exit");
         System.out.print("Choose an option: ");
         int choice = scanner.nextInt();
@@ -56,18 +56,55 @@ public class ProcurmentSystem {
                 System.out.println("===========================================");
                 System.out.print("Choose a purchase order to process: ");
                 choice = scanner.nextInt();
+                if (choice == 0) break;
                 PurchaseOrder purchaseOrder = purchaseOrders.get(choice - 1);
-                System.out.println("1. change approval status\n2. view stock levels\nChoose an option: ");
+                System.out.print("1. Approve\n2. Reject\n3. Pay\nChoose an option: ");
                 choice = scanner.nextInt();
-                if (choice == 1) {
-                    System.out.print("1. Approve\n2. Reject\n3. Pay\nChoose an option: ");
-                    choice = scanner.nextInt();
-                    if (choice == 1) purchaseOrder.setStatus(Status.APPROVED, fm);
-                    else if (choice == 2) purchaseOrder.setStatus(Status.REJECTED, fm);
-                    else if (choice == 3) purchaseOrder.setStatus(Status.PAID, fm);
-                } else if (choice == 2) {
-                    System.out.println("TBA");
+                if (choice == 1) purchaseOrder.setStatus(Status.APPROVED, fm);
+                else if (choice == 2) purchaseOrder.setStatus(Status.REJECTED, fm);
+                else if (choice == 3) purchaseOrder.setStatus(Status.PAID, fm);
+                break;
+            case 2:
+                System.out.println("==== Purchase Orders ====");
+                List<PurchaseOrder> purchaseOrders1 = PurchaseOrder.getMultiple("Status", (x) -> x.equals("STOCKED"));
+                System.out.println(String.format("%-10s | %-30s | %-10s | %-10s | %-15s | %-15s | %-15s",
+                        "POID",
+                        "Item xQTY",
+                        "Total $$$",
+                        "Status",
+                        "Approved By",
+                        "Placed By",
+                        "Supplier"));
+                for (PurchaseOrder po : purchaseOrders1) {
+                    System.out.println(po);
                 }
+                System.out.println("===========================================");
+                System.out.println("Choose the purchase order for which you want to see the stock: ");
+                choice = scanner.nextInt();
+                if (choice == 0) break;
+                PurchaseOrder po = purchaseOrders1.get(choice - 1);
+                List<Item> items = po.getItems();
+                System.out.println("Code | Item Name        | Description         | Quantity | Price/Unit | MOQ | Supplier   | Sales Price");
+                for (Item item : items)
+                    System.out.print(item);
+                break;
+            case 3:
+                List<Supplier> suppliers = Supplier.getMultiple("supplierID", x -> true);
+                System.out.printf("%-10s | %-12s | %-15s%n",
+                        "ID", "Name", "Contact");
+                for (Supplier supplier : suppliers)
+                    System.out.println(supplier);
+                System.out.print("Enter the supplier to view payment history: ");
+                choice = scanner.nextInt();
+                if (choice == 0) break;
+                int finalChoice = choice;
+                Supplier supplier = Supplier.get("supplierID", x -> x.equals(String.valueOf(finalChoice)));
+                Table table = new Table("src/files/PaymentHistory.csv");
+                List<List<String>> history = table.getRows("SupplierID", x -> x.equals(supplier.getsupplierID()));
+                for (List<String> rec : history) {
+                    System.out.println(rec);
+                }
+
         }
     }
 
@@ -381,9 +418,18 @@ public class ProcurmentSystem {
                     listItems(scanner);
                     promptToContinue(scanner); // Ask user to continue after viewing items
                 }
-                case 2 -> addSale(scanner);
-                case 3 -> editSale(scanner);
-                case 4 -> deleteSale(scanner);
+                case 2 -> {
+                    addSale(scanner);
+                    promptToContinue(scanner);
+                }
+                case 3 -> {
+                    editSale(scanner);
+                    promptToContinue(scanner);
+                }
+                case 4 -> {
+                    deleteSale(scanner);
+                    promptToContinue(scanner);
+                }
                 case 5 -> {
                     System.out.println("\n=== Sales Report ===");
                     Sale sale = new Sale();
@@ -446,9 +492,7 @@ public class ProcurmentSystem {
 
             // Call update with the correct saleID
             boolean success = sale.update("qty", "", String.valueOf(newQuantity));
-            if (success) {
-                System.out.println("Sale updated successfully.");
-            } else {
+            if (!success) {
                 System.out.println("Failed to update the sale. Please check the Sale ID and try again.");
             }
         } catch (Exception e) {
@@ -467,9 +511,7 @@ public class ProcurmentSystem {
 
             // Call delete
             boolean success = sale.delete();
-            if (success) {
-                System.out.println("Sale deleted successfully.");
-            } else {
+            if (!success) {
                 System.out.println("Failed to delete the sale. Please check the Sale ID and try again.");
             }
         } catch (Exception e) {
