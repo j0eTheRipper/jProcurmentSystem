@@ -30,7 +30,7 @@ public class Supplier extends InteractionsWithTable{
         try {
             Table table = new Table("src/files/supplier.csv");
             List<String> row = table.getRow(value, filter);
-            return new Supplier(row.get(0), row.get(1), row.get(2));
+            return new Supplier(row.get(0), row.get(1), row.get(2), Double.parseDouble(row.get(3)));
         } catch (FileNotFoundException e) {
             System.out.println("File name is incorrect");
             return null;
@@ -46,7 +46,7 @@ public class Supplier extends InteractionsWithTable{
             List<List<String>> rows = table.getRows(value, filter);
             List<Supplier> suppliers = new ArrayList<>();
             for (List<String> row : rows) {
-               suppliers.add(new Supplier(row.get(0), row.get(1), row.get(2)));
+               suppliers.add(new Supplier(row.get(0), row.get(1), row.get(2), Double.parseDouble(row.get(3))));
             }
             return suppliers;
         } catch (FileNotFoundException e) {
@@ -60,6 +60,7 @@ public class Supplier extends InteractionsWithTable{
     public Supplier(String supplierName, String supplierContact){
         this.supplierName = supplierName;
         this.supplierContact = supplierContact;
+        this.dueAmount = 0;
         try {
             table = new Table("src/files/supplier.csv");
             ID = generateID();
@@ -69,10 +70,11 @@ public class Supplier extends InteractionsWithTable{
         }
     }
 
-    public Supplier(String ID, String supplierName, String supplierContact) {
+    public Supplier(String ID, String supplierName, String supplierContact, double dueAmount) {
         this.ID = ID;
         this.supplierName = supplierName;
         this.supplierContact = supplierContact;
+        this.dueAmount = dueAmount;
         try {
             table = new Table("src/files/supplier.csv");
         }
@@ -123,7 +125,14 @@ public class Supplier extends InteractionsWithTable{
     public String getSupplierContact() {
         return supplierContact;
     }
+    public double getDueAmount() {
+        return dueAmount;
+    }
 
+    public void setDueAmount(double newAmount) {
+        this.update("dueAmount", String.valueOf(dueAmount), String.valueOf(newAmount));
+        this.dueAmount = newAmount;
+    }
     public boolean setSupplierContact(String supplierContact) {
         if(!supplierContact.matches("[0-9]{10}"))
             return false;
@@ -134,7 +143,7 @@ public class Supplier extends InteractionsWithTable{
 
     public boolean add() {
         try {
-            String[] values = {ID, supplierName, supplierContact};
+            String[] values = {ID, supplierName, supplierContact, String.valueOf(dueAmount)};
             table.addRow(values);
             return true;
         }
@@ -158,17 +167,6 @@ public class Supplier extends InteractionsWithTable{
 
         } catch (ValueNotFound e) {
             System.out.println("Supplier with ID " + ID + " was not found in the file.");
-            return false;
-        }
-    }
-
-    @Override
-    protected boolean update(String columnName, String oldValue, String newValue) {
-        try {
-            table.updateRow(table.getRowIndex(columnName, (x) -> x.equals(oldValue)), columnName, newValue);
-            return true;
-        } catch(ValueNotFound e){
-            System.out.println("ID not found.");
             return false;
         }
     }
