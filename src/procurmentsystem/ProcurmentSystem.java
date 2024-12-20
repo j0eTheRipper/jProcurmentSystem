@@ -318,30 +318,10 @@ public class ProcurmentSystem {
 
 
                 case 5: // Increase Item Quantity
-                    Item.displayAllItems(scanner);
-                    System.out.println("Enter Item Code to increase quantity: ");
-                    String itemCodeToIncrease = scanner.nextLine();
-                    Item itemToIncrease = Item.get("ItemCode", (x) -> x.equals(itemCodeToIncrease));
+                    PurchaseOrder.getMultiple("Status",(x)-> x.matches("RECEIVED"));
+                    String POidToReceive = scanner.nextLine();
+                    PurchaseOrder POToReceive = PurchaseOrder.get("POID", (x)->x.equals(POidToReceive));
 
-                    if (itemToIncrease != null) {
-                        System.out.println("Current Quantity: " + itemToIncrease.getItemQuantity());
-                        System.out.print("Enter quantity to add: ");
-                        int quantityToAdd = scanner.nextInt();
-                        scanner.nextLine();
-
-                        if (quantityToAdd > 0) {
-                            boolean quantityIncreased = itemToIncrease.increaseItemQuantity(quantityToAdd);
-                            if (quantityIncreased) {
-                                System.out.println("Quantity increased successfully!");
-                                System.out.println("New Quantity: " + itemToIncrease.getItemQuantity());
-                            } else {
-                                System.out.println("Failed to increase quantity.");
-                            }
-                        } else {
-                            System.out.println("Invalid quantity. Please enter a positive number.");
-                        }
-                    }
-                    break;
 
 
                 case 6: // Back to Main Menu
