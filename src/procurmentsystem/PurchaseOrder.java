@@ -7,15 +7,25 @@ import procurmentsystem.Table.*;
 
 public class PurchaseOrder extends Order{
     private requisition requisition;
-    public PurchaseOrder(String ID, List<Item> items, PurchaseManager placer, FinancialManager approvedBy, Status status, int totalPrice)  {
+    private Table bridge;
+    private Supplier supplier;
+
+    public PurchaseOrder(String ID, HashMap<Item, Integer> items, PurchaseManager placer, FinancialManager approvedBy, Status status)  {
         this.ID = ID;
         this.placer = placer;
         this.approvedBy = approvedBy;
         this.status = status;
-        this.totalPrice = totalPrice;
+        this.totalPrice = 0;
         this.items = items;
+
+        items.forEach((item, quantity) -> {
+            totalPrice += item.getPricePerUnit() * quantity;
+        });
+        supplier = items.keySet().iterator().next().getSupplier();
+
         try {
             this.table = new Table("src/files/purchaseOrders.csv");
+            this.bridge = new Table("src/files/PurchasedItems.csv");
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -26,21 +36,28 @@ public class PurchaseOrder extends Order{
         this.placer = placer;
         this.approvedBy = approvedBy;
         this.status = status;
-        this.totalPrice = totalPrice;
         this.requisition = requisition;
+        this.totalPrice = totalPrice;
         try {
             this.table = new Table("src/files/purchaseOrders.csv");
+            this.bridge = new Table("src/files/PurchasedItems.csv");
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public PurchaseOrder(List<Item> items, PurchaseManager placer, FinancialManager approvedBy, Status status, int totalPrice) {
+    public PurchaseOrder(HashMap<Item, Integer> items, PurchaseManager placer, FinancialManager approvedBy, Status status) {
         this.placer = placer;
         this.approvedBy = approvedBy;
         this.status = status;
-        this.totalPrice = totalPrice;
         this.items = items;
+        this.totalPrice = 0;
+        items.forEach((item, quantity) -> {
+           totalPrice += item.getPricePerUnit() * quantity;
+        });
+        supplier = items.keySet().iterator().next().getSupplier();
+
+
         try {
             this.table = new Table("src/files/purchaseOrders.csv");
             this.ID = generateID();
@@ -54,13 +71,15 @@ public class PurchaseOrder extends Order{
             Table table = new Table("src/files/purchaseOrders.csv");
             List<String> PurchaseOrderData = table.getRow(column, filter);
             POData data = getPoData(PurchaseOrderData);
+
+            HashMap<Item, Integer> items = getItemsFromBridge(PurchaseOrderData);
+
             return new PurchaseOrder(
                     PurchaseOrderData.get(0),
-                    procurmentsystem.requisition.get("requisID", (x) -> x.equals(PurchaseOrderData.get(1))),
+                    items,
                     data.purchaseManager(),
                     data.financialManager(),
-                    data.status(),
-                    Integer.parseInt(PurchaseOrderData.get(2))
+                    data.status()
             );
         } catch (FileNotFoundException e) {
             System.out.println("file not found");
@@ -70,6 +89,18 @@ public class PurchaseOrder extends Order{
         }
     }
 
+    private static HashMap<Item, Integer> getItemsFromBridge(List<String> PurchaseOrderData) throws FileNotFoundException, ValueNotFound {
+        Table bridge = new Table("src/files/PurchasedItems.csv");
+        List<List<String>> allItemsForPurchase = bridge.getRows("POID", (x) -> x.equals(PurchaseOrderData.get(0)));
+        HashMap<Item, Integer> items = new HashMap<>();
+        for (List<String> row : allItemsForPurchase) {
+            Item tempItem = Item.get("ItemCode", x -> x.equals(row.get(1)));
+            int quantity = Integer.parseInt(row.get(2));
+            items.put(tempItem, quantity);
+        }
+        return items;
+    }
+
     public static List<PurchaseOrder> getMultiple(String column, Function<String, Boolean> filter) {
         try {
             Table table = new Table("src/files/purchaseOrders.csv");
@@ -77,13 +108,13 @@ public class PurchaseOrder extends Order{
             List<PurchaseOrder> result = new ArrayList<>();
             for (List<String> po : purchaseOrders) {
                 POData data = getPoData(po);
-                result.add( new PurchaseOrder(
+                HashMap<Item, Integer> itemsFromBridge = getItemsFromBridge(po);
+                result.add(new PurchaseOrder(
                         po.get(0),
-                        procurmentsystem.requisition.get("requisID", (x) -> x.equals(po.get(1))),
+                        itemsFromBridge,
                         data.purchaseManager(),
                         data.financialManager(),
-                        data.status(),
-                        Integer.parseInt(po.get(2))
+                        data.status()
                 ));
             }
             return result;
@@ -96,13 +127,13 @@ public class PurchaseOrder extends Order{
     }
 
     private static POData getPoData(List<String> PurchaseOrderData) {
-        PurchaseManager purchaseManager = (PurchaseManager) User.get("id", (x) -> x.equals(PurchaseOrderData.get(4)));
-        FinancialManager financialManager = (FinancialManager) User.get("id", (x) -> x.equals(PurchaseOrderData.get(5)));
+        PurchaseManager purchaseManager = (PurchaseManager) User.get("id", (x) -> x.equals(PurchaseOrderData.get(5)));
+        FinancialManager financialManager = (FinancialManager) User.get("id", (x) -> x.equals(PurchaseOrderData.get(4)));
         Status status = switch (PurchaseOrderData.get(3)) {
-            case "Pending" -> Status.PENDING;
-            case "Paid" -> Status.PAID;
-            case "Approved" -> Status.APPROVED;
-            case "Rejected" -> Status.REJECTED;
+            case "PENDING" -> Status.PENDING;
+            case "PAID" -> Status.PAID;
+            case "APPROVED" -> Status.APPROVED;
+            case "REJECTED" -> Status.REJECTED;
             default -> null;
         };
         return new POData(purchaseManager, financialManager, status);
@@ -115,16 +146,6 @@ public class PurchaseOrder extends Order{
     }
     public requisition getRequisition(){
         return requisition;
-    }
-
-    //setters
-    public boolean setID(String ID){
-        if(ID == null || !ID.matches("PO[0-9]+")){
-            return false;
-        }
-        this.update("POID", this.ID, ID);
-        this.POID = POID;
-        return true;
     }
 
     public boolean setRequisition(requisition requisition){
@@ -140,23 +161,61 @@ public class PurchaseOrder extends Order{
     @Override
     public boolean add(){
         try {
+            String requisID, approverID;
+            if (requisition == null) {
+                 requisID = "";
+            } else
+                requisID = requisition.getRequisID();
+            if (approvedBy == null) {
+                approverID = "";
+            } else
+                approverID = approvedBy.getID();
+
+            if (items != null) {
+                items.forEach((item, quantity) -> {
+                    try {
+                        bridge.addRow(new String[]{ID, item.getID(), String.valueOf(quantity)});
+                    } catch (IncorrectNumberOfValues e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+            }
+
             String[] values = {
-                ID, //Purchase Order ID
-                requisition.getRequisID() //requisition ID
+                    ID,
+                    requisID,
+                    String.valueOf(totalPrice),
+                    String.valueOf(status),
+                    approverID,
+                    placer.getID(),
+                    supplier.getsupplierID()
             };
             table.addRow(values);
             return true;
-            
         } catch (IncorrectNumberOfValues e) {
             System.out.println("Incorrect input: " + e.getMessage());
             return false;
         }
     }
-    //delete 
+
+    public void setStatus(Status newStatus) {
+        if (newStatus == status) return;
+
+        if (newStatus == Status.PAID) {
+            if (status == Status.APPROVED)
+                supplier.setDueAmount(supplier.getDueAmount() - this.totalPrice);
+        } else if (newStatus == Status.APPROVED) {
+            supplier.setDueAmount(supplier.getDueAmount() + this.totalPrice);
+        }
+        update("Status", "", String.valueOf(newStatus));
+        status = newStatus;
+    }
+
+    //delete
     @Override
     public boolean delete(){
         try {
-            int rowIndex = table.getRowIndex("POID", id -> id.equals(POID));
+            int rowIndex = table.getRowIndex("POID", id -> id.equals(ID));
             table.deleteRow(rowIndex);
             System.out.println("The Purchase Order ID : "+ ID + "has been successfully deleted.");
             return true;
@@ -167,7 +226,29 @@ public class PurchaseOrder extends Order{
     }
 
     @Override
-    public String toString(){
-        return String.format("%-15s | %-10s", ID, requisition.getRequisID());
+    public String toString() {
+        String approvedByName = "No one yet...";
+        if (approvedBy != null) {
+            approvedByName = approvedBy.firstName + " " + approvedBy.lastName;
+        }
+        List<String> itemDisplays = new ArrayList<>();
+        items.forEach((item, quantity) -> {
+            itemDisplays.add(String.format("%s x%d", item.getItemName(), quantity));
+        });
+
+        String itemList = String.join(", ", itemDisplays);
+        if (itemList.length() > 30) {
+            itemList = itemList.substring(0, 27) + "...";
+        }
+
+        return String.format("%-10s | %-30s | $%9.2f | %-10s | %-15s | %-15s | %-15s",
+            ID,
+            itemList,
+            totalPrice,
+            status,
+            approvedByName,
+            placer.firstName + " " + placer.lastName,
+            supplier.getSupplierName()
+        );
     }
 }

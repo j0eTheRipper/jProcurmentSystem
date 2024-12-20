@@ -3,10 +3,10 @@ package procurmentsystem.Table;
 import procurmentsystem.Item;
 import procurmentsystem.User;
 
-import java.util.List;
+import java.util.HashMap;
 
 public abstract class Order extends InteractionsWithTable{
-    protected List<Item> items;
+    protected HashMap<Item, Integer> items;
     protected User placer;
     protected User approvedBy;
     protected Status status;

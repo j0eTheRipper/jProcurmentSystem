@@ -261,11 +261,15 @@ public class Item extends InteractionsWithTable {
         }
     }
 
+    public String getID() {
+        return ID;
+    }
+
     @Override
     public String toString() {
         return String.format("%-5s | %-15s | %-20s | %,6d | %8.2f | %3d | %-10s | %8.2f",
                 ID, itemName, itemDesc, itemQuantity, pricePerUnit, moq,
                 supplier.getSupplierName(),
-                recommendedSalesPrice);
+                recommendedSalesPrice) + "\n";
     }
 }

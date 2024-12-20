@@ -4,26 +4,69 @@
  */
 package procurmentsystem;
 
+import procurmentsystem.Table.Status;
+
+import java.awt.*;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
-/**
- *
- * @author j0eTh
- */
 public class ProcurmentSystem {
     public static void main(String[] args) throws IOException {
         Scanner scanner = new Scanner(System.in);
         boolean exit = false;
 
         while (!exit) {
-            
+            fm();
         }
         scanner.close();
     }
-    
-    private static void supplyManager() {
 
+    private static void fm() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("\n==== Financial Manager ====");
+        System.out.println("1. Purchase Order Management");
+        System.out.println("2. Stock status");
+        System.out.println("3. Supplier Payments Management");
+        System.out.println("4. exit");
+        System.out.print("Choose an option: ");
+        int choice = scanner.nextInt();
+        switch (choice) {
+            case 1:
+                System.out.println("==== Purchase Orders ====");
+                List<PurchaseOrder> purchaseOrders = PurchaseOrder.getMultiple("POID", (x) -> !x.isBlank());
+                String header = String.format("%-10s | %-30s | %-10s | %-10s | %-15s | %-15s",
+                        "POID",
+                        "Item xQTY",
+                        "Total $$$",
+                        "Status",
+                        "Approved By",
+                        "Placed By");
+                System.out.println(header);
+                for (PurchaseOrder po : purchaseOrders) {
+                    System.out.println(po);
+                }
+                System.out.println("===========================================");
+                System.out.print("Choose a purchase order to process: ");
+                choice = scanner.nextInt();
+                PurchaseOrder purchaseOrder = purchaseOrders.get(choice - 1);
+                System.out.println("1. change approval status\n2. view stock levels\nChoose an option: ");
+                choice = scanner.nextInt();
+                if (choice == 1) {
+                    System.out.print("1. Approve\n2. Reject\n3. Pay\nChoose an option: ");
+                    choice = scanner.nextInt();
+                    if (choice == 1) purchaseOrder.setStatus(Status.APPROVED);
+                    else if (choice == 2) purchaseOrder.setStatus(Status.REJECTED);
+                    else if (choice == 3) purchaseOrder.setStatus(Status.PAID);
+                } else if (choice == 2) {
+                    System.out.println("TBA");
+                }
+        }
+    }
+
+    private static void supplyManager() throws IOException {
+        Scanner scanner = new Scanner(System.in);
         System.out.println("\n==== Inventory Manager Menu ====");
             System.out.println("1. Supplier Management");
             System.out.println("2. Item Management");
@@ -47,7 +90,6 @@ public class ProcurmentSystem {
                     break;
 
                 case 4:
-                    exit = true;
                     System.out.println("Exiting the system. Goodbye!");
                     break;
 
