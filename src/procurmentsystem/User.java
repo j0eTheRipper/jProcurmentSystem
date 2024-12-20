@@ -78,7 +78,7 @@ public abstract class User extends InteractionsWithTable {
                     return new FinancialManager(row.get(0), row.get(1), row.get(2), row.get(3), row.get(5));
 
                 case "Sales Manager ":
-                    return new SalesManager(row.get(0), row.get(1), row.get(2), row.get(3), row.get(5));
+                    return new saleManager(row.get(0), row.get(1), row.get(2), row.get(3), row.get(5));
 
                 case "Purchase Manager":
                     return new PurchaseManager(row.get(0), row.get(1), row.get(2), row.get(3), row.get(5));

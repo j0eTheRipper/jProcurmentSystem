@@ -1,5 +1,7 @@
 package procurmentsystem;
 
+import procurmentsystem.Table.Roles;
+
 import java.io.FileNotFoundException;
 
 public class saleManager extends User {
@@ -8,6 +10,17 @@ public class saleManager extends User {
     public saleManager() {
         // No additional setup required
     }
+
+    public saleManager(String ID, String firstName, String lastName, String password, String email) {
+        this.ID = ID;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+        this.email = email;
+        this.role = Roles.FinancialManager;
+    }
+
+
 
     // 1. View Items
     public void viewItems() {
@@ -43,5 +56,20 @@ public class saleManager extends User {
     public void viewPurchaseOrders() {
         System.out.println("Viewing purchase orders...");
         // Placeholder for implementation
+    }
+
+    @Override
+    public String toString() {
+        return "";
+    }
+
+    @Override
+    protected boolean add() {
+        return false;
+    }
+
+    @Override
+    protected boolean delete() {
+        return false;
     }
 }
