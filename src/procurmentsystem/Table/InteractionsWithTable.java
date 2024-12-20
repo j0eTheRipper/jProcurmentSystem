@@ -14,7 +14,8 @@ public abstract class InteractionsWithTable {
 
     protected boolean update(String columnName, String oldValue, String newValue) {
         try {
-            table.updateRow(table.getRowIndex(columnName, (x) -> x.equals(oldValue)), columnName, newValue);
+            int row = table.getRowIndexById(ID);
+            table.updateRow(row, columnName, newValue);
             return true;
         } catch(ValueNotFound e){
             System.out.println("ID not found.");

@@ -99,6 +99,16 @@ public class Table {
         throw new ValueNotFound();
     }
 
+    public int getRowIndexById(String id) throws ValueNotFound {
+        List<String> ColumnValues = columns.get(columnNames.get(0));
+        for (int i = 0; i < ColumnValues.size(); i++) {
+            String cell = ColumnValues.get(i);
+            if (cell.equals(id))
+                return i;
+        }
+        throw new ValueNotFound();
+    }
+
     public List<Integer> getRowIndexes(String lookUpColumn, Function<String, Boolean> checkerFunction) throws ValueNotFound {
         if (!columnNames.contains(lookUpColumn))
             return null;
