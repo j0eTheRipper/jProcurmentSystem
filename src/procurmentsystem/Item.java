@@ -207,14 +207,26 @@ public class Item extends InteractionsWithTable {
         this.recommendedSalesPrice = recommendedSalesPrice;
         return true;
     }
-    public boolean increaseItemQuantity(int quantity) {
-        if (quantity < 0)
-            return false;
-        int newQuantity = this.itemQuantity + quantity;
+
+    public boolean increaseItemQuantity() {
+        int newQuantity = this.itemQuantity ;
         this.update("ItemQuantity", String.valueOf(this.itemQuantity), String.valueOf(newQuantity));
         this.itemQuantity = newQuantity;
         return true;
     }
+
+//    public static boolean updateStockOfStocked(String POID) throws FileNotFoundException, ValueNotFound {
+//        Table purchasedItems = new Table("src/files/PurchasedItems.csv");
+//        Table Items = new Table("src/files/Items.csv");
+//        List<List<String>> stockedOrders = purchasedItems.getRows("POID", (x)->x.equals(POID));
+//        for (List<String>  x: stockedOrders){
+//            int newStock = Integer.parseInt(x.get(2));
+//            String itemIDtoStock = x.get(1);
+//            List<String> item = Items.getRow("ItemCode", (a)->a.equals(itemIDtoStock));
+//
+//        }
+//        return true;
+//    }
 
     public boolean add() {
         try {
