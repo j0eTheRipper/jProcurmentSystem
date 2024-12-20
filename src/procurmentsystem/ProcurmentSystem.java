@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import procurmentsystem.Table.Status;
+import procurmentsystem.Table.Table;
+import procurmentsystem.Table.ValueNotFound;
 
 public class ProcurmentSystem {
     public static void main(String[] args) throws IOException, ValueNotFound {
