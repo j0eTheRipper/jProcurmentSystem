@@ -163,7 +163,7 @@ public class PurchaseOrder extends Order{
         try {
             String requisID, approverID;
             if (requisition == null) {
-                 requisID = "";
+                requisID = "";
             } else
                 requisID = requisition.getRequisID();
             if (approvedBy == null) {

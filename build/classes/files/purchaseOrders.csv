@@ -1,1 +1,4 @@
-POID	Status	ApprovedBy	ReqID	Price
+POID,ReqID,Price,Status,ApprovedBy,MadeBy,Supplier
+1,,2600,PAID,,ID4,5
+2,,1800,PENDING,,ID4,5
+3,,594,PENDING,,ID4,3

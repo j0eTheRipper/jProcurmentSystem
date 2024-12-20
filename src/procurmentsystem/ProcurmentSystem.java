@@ -4,14 +4,17 @@
  */
 package procurmentsystem;
 
+
 import procurmentsystem.Table.Status;
 
 import java.awt.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
+import procurmentsystem.Table.Status;
 
 public class ProcurmentSystem {
     public static void main(String[] args) throws IOException {
@@ -474,5 +477,213 @@ public class ProcurmentSystem {
             System.out.println("Error deleting sale: " + e.getMessage());
         }
     }
+private static void purchaseManager(Scanner sc){
+            boolean exit = false;
+            System.out.println("==== Purchase Manager Menu ====");
+            System.out.println("1. Purchase Order Menu.");
+            System.out.println("2. Generate a new requisition.");
+            System.out.println("3. View all items.");
+            System.out.println("4. View all suppliers.");
+            System.out.println("5. View all requisitions.");
+            System.out.println("6. Exit.");
+            
+
+            int choices = sc.nextInt();
+            sc.nextLine();
+
+            switch(choices){
+                case 1:
+                    purchaseManagerMenu(sc);
+                    break;
+                case 2:
+                    //requester
+                    System.out.println("Enter requester name: ");
+                    String requesterName = sc.nextLine();
+                    //po id
+                    System.out.println("Enter purchase order ID: ");
+                    String purchaseOrderID = sc.nextLine();
+                    //status
+                    System.out.println("Enter status (Pending/Approved/Rejected): " );
+                    String status = sc.nextLine();
+
+                    //create requisition
+                    requisition newRequisition = new requisition(requesterName, purchaseOrderID, status);
+
+                    //add items
+                    boolean addItems = true;
+                    while(addItems){
+                        System.out.println("Enter item code: ");
+                        String itemCode = sc.nextLine();
+                        System.out.println("Enter quantity of items: ");
+                        int quantity = sc.nextInt();
+                        sc.nextLine();
+
+                        newRequisition.addItem(itemCode, quantity);
+
+                        System.out.println("Do you want to add more? (y/n): ");
+                        String response = sc.nextLine();
+                        addItems = response.equalsIgnoreCase("y");
+                        
+                    }
+                    //save
+                    if(newRequisition.add()){
+                        System.out.println("Requisition created successfully.");
+                    }else{
+                        System.out.println("Failed to create requisition.");
+                    }
+                    System.out.println("Press enter key to return to the menu...");
+                    sc.nextLine();
+                    purchaseManager(sc);
+                case 3:
+                    Item.displayAllItems(sc);
+                    System.out.println("Press enter key to continue...");
+                    sc.nextLine();
+                    System.out.println("Press enter key to return to the menu...");
+                    sc.nextLine();
+                    purchaseManager(sc);
+                case 4:
+                    Supplier.displayAllSuppliers(sc);
+                    System.out.println("Press enter key to continue...");
+                    sc.nextLine();
+                    System.out.println("Press enter key to return to the menu...");
+                    sc.nextLine();
+                    purchaseManager(sc);
+
+                case 5:
+                    List<requisition> allReq = requisition.getMultiple("requisID", x-> true);
+                    if(allReq != null || !allReq.isEmpty()){
+                        for(requisition reqs : allReq){
+                            System.out.println(reqs);
+                        }
+                    }else{
+                        System.out.println("No requisition is found.");
+                    }
+                    System.out.println("Press enter key to return to the menu...");
+                    sc.nextLine();
+                    purchaseManager(sc);;
+                case 6:
+                    System.out.println("Exiting...");
+                    break;
+
+            }
+
+        }
+
+        private static void purchaseManagerMenu(Scanner sc){
+            boolean exit = false;
+            System.out.println("==== Purchase Order Menu ====");
+            System.out.println("1. Create one.");
+            System.out.println("2. View all.");
+            System.out.println("3. Update a purchase order.");
+            System.out.println("4. Delete a purchase order.");
+            System.out.println("5. Back to main menu.");
+
+            int choices = sc.nextInt();
+            sc.nextLine();
+
+            switch(choices){
+                case 1:
+                    //placer input
+                    System.out.println("Enter Purchase Manager ID: ");
+                    String placerID = sc.nextLine();
+                    PurchaseManager placer = (PurchaseManager)User.get("id", x -> x.equals(placerID));
+
+                    if (placer == null){
+                        System.out.println("Purchase manager not found.");
+                        break;
+                    }
+                    //approver input
+                    System.out.println("enter Financial Manager ID: ");
+                    String approvalID = sc.nextLine();
+                    FinancialManager approvedby = (FinancialManager)User.get("id", x->x.equals(approvalID));
+
+                    if(approvedby == null){
+                        System.out.println("Financial manager not found.");
+                        break;
+                    }
+
+                    //item and quantity input
+                    HashMap<Item, Integer> items = new HashMap<>();
+                    boolean addItems = true;
+                    while(addItems){
+                        System.out.println("Enter item code: ");
+                        String itemCode = sc.nextLine();
+                        Item item = Item.get("ItemCode", x->x.equals(itemCode));
+
+                        if(item == null){
+                            System.out.println("Item not found.");
+                        }else{
+                            System.out.println("Enter quantity for" +itemCode+ ":");
+                            int quantity = sc.nextInt();
+                            sc.nextLine();
+                            items.put(item, quantity);
+                        }
+
+                        System.out.println("Would you like to add another item? (y/n)");
+                        String response = sc.nextLine();
+                        addItems = response.equalsIgnoreCase("y");
+                    }
+                    //calculate price and select status
+                    int totalPrice = 0;
+                    for(Map.Entry<Item, Integer> entry : items.entrySet()){
+                        totalPrice += entry.getKey().getPricePerUnit()*entry.getValue();
+                    }
+                    //status
+                    System.out.println("Enter the status of purchase order (PENDING, APPROVED, PAID, REJECTED): ");
+                    String statusinput = sc.nextLine();
+                    Status status = Status.valueOf(statusinput.toUpperCase());
+
+                    //generate purchase order
+                    PurchaseOrder purchaseOrder = new PurchaseOrder(items, placer, approvedby, status);
+                    boolean createOrder = purchaseOrder.add();
+
+                    if (createOrder){
+                        System.out.println("Purchase Order created successfully.");
+                    }else{
+                        System.out.println("Failed to create Purchase Order.");
+                    }
+                    System.out.println("Press enter key to return to the menu...");
+                    sc.nextLine();
+                    purchaseManagerMenu(sc);
+
+                case 2:
+                    List<PurchaseOrder> allOrders = PurchaseOrder.getMultiple("POID", x -> true);
+                    if(allOrders != null || !allOrders.isEmpty()){
+                        for(PurchaseOrder orders : allOrders){
+                            System.out.println(orders);
+                        }
+                    }else{
+                        System.out.println("No purchase orders found.");
+                    }
+                    System.out.println("Press enter key to return to the menu...");
+                    sc.nextLine();
+                    purchaseManagerMenu(sc);
+                case 3:
+                    purchaseOrderUpdateMenu(sc);
+                case 4:
+                    System.out.println("Enter a purchase order ID to delete: ");
+                    String delPurchaseOrder = sc.nextLine();
+                    PurchaseOrder delOrder = PurchaseOrder.get(delPurchaseOrder, x -> x.equals(delPurchaseOrder));
+
+                    if (delOrder != null){
+                        delOrder.delete();
+                        System.out.println("the purchase order "+delOrder+" has been deleted.");
+                    }else{
+                        System.out.println("Error: Purchase order not found.");
+                    }
+                    System.out.println("Press enter key to return to the menu...");
+                    sc.nextLine();
+                    purchaseManagerMenu(sc);
+                case 5:
+                    purchaseManager(sc);
+            }
+        }
+
+        private static void purchaseOrderUpdateMenu(Scanner sc){
+            boolean exit =false;
+            System.out.println("==== Update Purchase Order ====");
+            System.out.println("1.  ");
+            System.out.println("2.  ");
+        }
 
 }
