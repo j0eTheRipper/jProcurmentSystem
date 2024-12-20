@@ -15,14 +15,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import procurmentsystem.Table.Status;
+import procurmentsystem.Table.ValueNotFound;
 
 public class ProcurmentSystem {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ValueNotFound {
         Scanner scanner = new Scanner(System.in);
         boolean exit = false;
 
         while (!exit) {
-            salesMenu(scanner);
+            itemMenu(scanner);
         }
         scanner.close();
     }
@@ -70,7 +71,7 @@ public class ProcurmentSystem {
         }
     }
 
-    private static void supplyManager() throws IOException {
+    private static void supplyManager() throws IOException, ValueNotFound {
         Scanner scanner = new Scanner(System.in);
         System.out.println("\n==== Inventory Manager Menu ====");
         System.out.println("1. Supplier Management");
@@ -190,7 +191,7 @@ public class ProcurmentSystem {
         }
     }
 
-    private static void itemMenu(Scanner scanner) throws IOException {
+    private static void itemMenu(Scanner scanner) throws IOException, ValueNotFound {
         boolean backToMain = false;
 
         while (!backToMain) {
@@ -199,7 +200,7 @@ public class ProcurmentSystem {
             System.out.println("2. Delete an Item");
             System.out.println("3. View all Items");
             System.out.println("4. Update an Item");
-            System.out.println("5. Increase Item Quantity");
+            System.out.println("5. Stock new shipment");
             System.out.println("6. Back to Main Menu");
             System.out.print("Choose an option: ");
             int choice = scanner.nextInt();
@@ -322,10 +323,27 @@ public class ProcurmentSystem {
                     break;
 
 
-                case 5: // Increase Item Quantity
-                    PurchaseOrder.getMultiple("Status",(x)-> x.matches("RECEIVED"));
-                    String POidToReceive = scanner.nextLine();
-                    PurchaseOrder POToReceive = PurchaseOrder.get("POID", (x)->x.equals(POidToReceive));
+                case 5: // Stock shipment delivery and add to inventory
+                    List<PurchaseOrder> PaidPO = PurchaseOrder.getMultiple("Status",(x)-> x.matches("PAID"));
+                    String header = String.format("%-10s | %-30s | %-10s | %-10s | %-15s | %-15s",
+                            "POID",
+                            "Item xQTY",
+                            "Total $$$",
+                            "Status",
+                            "Approved By",
+                            "Placed By");
+                    System.out.println(header);
+                    for (PurchaseOrder po : PaidPO) {
+                        System.out.println(po);
+                    }
+                    System.out.println("Select Shipment to Stock: ");
+                    String POidToStock = scanner.nextLine();
+                    PurchaseOrder POToStock = PurchaseOrder.get("POID", (x)->x.equals(POidToStock));
+                    POToStock.setStatus(Status.STOCKED);
+
+                    //Item.updateStockOfStocked(POidToStock);
+                    System.out.println("Inventory updated successfully!");
+
 
 
 
