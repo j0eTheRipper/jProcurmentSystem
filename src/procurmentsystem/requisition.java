@@ -3,7 +3,7 @@ package procurmentsystem;
 import procurmentsystem.Table.*;
 
 import java.io.FileNotFoundException;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,9 +29,9 @@ public class requisition extends Order {
     }
 
 
-    public requisition(String requesterName, String PurchaseOrder, String status) {
+    public requisition(String requesterName, String purchaseOrderID, String status) {
         this.requesterName= requesterName;
-        this.PurchaseOrder= PurchaseOrder;
+        this.PurchaseOrder= purchaseOrderID;
         this.status= status;
         try {
             requestedItemsTable = new Table("src/files/requestedItems.csv");
@@ -69,6 +69,29 @@ public class requisition extends Order {
         } catch (ValueNotFound e) {
             System.out.println("Value not found!");
             return null;
+        }
+    }
+
+    public static List<requisition> getMultiple(String column, Function<String, Boolean> filter) {
+        try {
+            // Load requisition.csv
+            Table requisitionTable = new Table("src/files/requisition.csv");
+            List<List<String>> requisitionRows = requisitionTable.getRows(column, filter);
+            List<requisition> requisitions = new ArrayList<>();
+            for (List<String> row : requisitionRows) {
+                String requisID = row.get(0);
+                String requesterName = row.get(1);
+                String POID = row.get(2);
+                Status status = Status.valueOf(row.get(3));
+            }
+            return requisitions;
+
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found: " + e.getMessage());
+            return new ArrayList<>();
+        } catch (ValueNotFound e) {
+            System.out.println("No requisitions found matching the filter.");
+            return new ArrayList<>();
         }
     }
 
