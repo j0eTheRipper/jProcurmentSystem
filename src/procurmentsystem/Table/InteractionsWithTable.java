@@ -12,7 +12,7 @@ public abstract class InteractionsWithTable {
     abstract protected boolean add();
     abstract protected boolean delete();
 
-    protected boolean update(String columnName, String oldValue, String newValue) {
+    protected boolean update(String columnName, String newValue) {
         try {
             int row = table.getRowIndexById(ID);
             table.updateRow(row, columnName, newValue);

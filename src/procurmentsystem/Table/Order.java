@@ -1,7 +1,7 @@
 package procurmentsystem.Table;
 
 import procurmentsystem.Item;
-import procurmentsystem.User;
+import procurmentsystem.Users.User;
 
 import java.util.HashMap;
 
